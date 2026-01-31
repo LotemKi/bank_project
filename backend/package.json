@@ -1,0 +1,27 @@
+{
+  "name": "Lok-bank-api",
+  "version": "1.0.0",
+  "description": "REST API for banking application (in-memory storage, auth + transactions)",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.1.3",
+    "nodemailer": "^7.0.12",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "author": "Lotem",
+  "license": "MIT"
+}
