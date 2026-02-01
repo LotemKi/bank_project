@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import {
   Box, TextField, Typography, Button, IconButton, InputAdornment,
-  alpha, Divider, Paper, Container, Dialog, DialogTitle,
+  alpha, Divider, Paper, Dialog, DialogTitle,
   DialogContent, DialogContentText, DialogActions
 } from "@mui/material";
-import { LockOutlined, Shield, Visibility, VisibilityOff, VerifiedUser, Security, RadioButtonChecked, InfoOutlined } from "@mui/icons-material";
+import { LockOutlined, Shield, Visibility, VisibilityOff, RadioButtonChecked, InfoOutlined } from "@mui/icons-material";
 import { theme } from "../theme/theme.ts";
 import Cookies from "js-cookie";
 import { useSearchParams, useNavigate } from "react-router-dom";
