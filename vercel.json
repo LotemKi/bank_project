@@ -15,12 +15,11 @@
     ],
     "routes": [
         {
-            "src": "/api/v1/(.*)",
-            "dest": "/backend/api/index.js"
-        },
-        {
             "src": "/api/(.*)",
-            "dest": "/backend/api/index.js"
+            "dest": "/backend/api/index.js",
+            "headers": {
+                "x-vercel-original-path": "/api/$1"
+            }
         },
         {
             "src": "/assets/(.*)",
