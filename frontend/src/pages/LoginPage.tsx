@@ -36,12 +36,20 @@ const Login = () => {
     verifyUser();
   }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     const loginData: LoginRequest = { email, password };
     const res = await login(loginData);
     if (res.success) {
       Cookies.set("access_token", res.data.jwt, { secure: true, sameSite: "strict" });
       navigate("/dashboard");
+    } else {
+      const message = res.data === "INVALID_CREDENTIALS"
+        ? "Invalid email or password."
+        : res.data === "SERVER_ERROR"
+          ? "Server error. Please try again later."
+          : "Unable to connect. Check your network.";
+      alert(message);
     }
   };
 
@@ -142,7 +150,7 @@ const Login = () => {
                 </Typography>
               </Box>
 
-              <Box component="form" noValidate>
+              <Box component="form" noValidate onSubmit={(e) => handleSubmit(e)}>
                 <TextField
                   margin="normal"
                   fullWidth
@@ -187,7 +195,7 @@ const Login = () => {
                   fullWidth
                   variant="contained"
                   size="large"
-                  onClick={handleSubmit}
+                  onClick={() => handleSubmit()}
                   sx={{
                     py: 2,
                     fontWeight: 800,
