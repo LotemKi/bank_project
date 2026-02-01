@@ -26,5 +26,3 @@
             "src": "/(.*)",
             "dest": "/frontend/index.html"
         }
-    ]
-}
