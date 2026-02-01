@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import serverless from 'serverless-http';
 import app from '../src/app.js';
 import connectDB from '../src/services/db.service.js';
@@ -10,6 +11,7 @@ if (process.env.MONGODB_URI) {
         await connectDB();
     } catch (err) {
         console.error('DB connect failed at cold start:', err);
+        // Don't exit process in serverless - just log the error
     }
 }
 
