@@ -19,6 +19,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [openForgot, setOpenForgot] = useState(false); // State for the popup
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,11 +39,38 @@ const Login = () => {
   }, []);
 
   const handleSubmit = async () => {
-    const loginData: LoginRequest = { email, password };
-    const res = await login(loginData);
-    if (res.success) {
-      Cookies.set("access_token", res.data.jwt, { secure: true, sameSite: "strict" });
-      navigate("/dashboard");
+    // Validation
+    if (!email || !password) {
+      setError("Please enter both email and password");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const loginData: LoginRequest = { email, password };
+      const res = await login(loginData);
+      
+      if (res.success) {
+        Cookies.set("access_token", res.data.jwt, { secure: true, sameSite: "strict" });
+        navigate("/dashboard");
+      } else {
+        // Handle different error types
+        if (res.data === "INVALID_CREDENTIALS") {
+          setError("Invalid email or password. Please try again.");
+        } else if (res.data === "SERVER_ERROR") {
+          setError("Server error. Please try again later.");
+        } else if (res.data === "NETWORK_ERROR") {
+          setError("Network error. Please check your connection.");
+        } else {
+          setError("Login failed. Please try again.");
+        }
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,14 +171,25 @@ const Login = () => {
                 </Typography>
               </Box>
 
-              <Box component="form" noValidate>
+              <Box 
+                component="form" 
+                noValidate
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit();
+                }}
+              >
                 <TextField
                   margin="normal"
                   fullWidth
                   label="Email"
                   variant="standard"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError(null);
+                  }}
+                  disabled={loading}
                   sx={{ mb: 2, '& .MuiInputLabel-root': { fontWeight: 700, fontSize: '0.8rem' } }}
                 />
                 <TextField
@@ -159,12 +199,25 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   variant="standard"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError(null);
+                  }}
+                  disabled={loading}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !loading) {
+                      handleSubmit();
+                    }
+                  }}
                   sx={{ mb: 1, '& .MuiInputLabel-root': { fontWeight: 700, fontSize: '0.8rem' } }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={() => setShowPassword(!showPassword)} size="small">
+                        <IconButton 
+                          onClick={() => setShowPassword(!showPassword)} 
+                          size="small"
+                          disabled={loading}
+                        >
                           {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                         </IconButton>
                       </InputAdornment>
@@ -183,11 +236,28 @@ const Login = () => {
                   </Button>
                 </Box>
 
+                {error && (
+                  <Box
+                    sx={{
+                      mb: 2,
+                      p: 1.5,
+                      borderRadius: 1,
+                      bgcolor: alpha('#f44336', 0.1),
+                      border: `1px solid ${alpha('#f44336', 0.3)}`,
+                    }}
+                  >
+                    <Typography variant="body2" color="error" sx={{ fontWeight: 600 }}>
+                      {error}
+                    </Typography>
+                  </Box>
+                )}
+
                 <Button
                   fullWidth
                   variant="contained"
                   size="large"
                   onClick={handleSubmit}
+                  disabled={loading}
                   sx={{
                     py: 2,
                     fontWeight: 800,
@@ -196,10 +266,11 @@ const Login = () => {
                     fontSize: "1rem",
                     letterSpacing: 1,
                     "&:hover": { bgcolor: theme.palette.primary.dark },
+                    "&:disabled": { bgcolor: alpha(theme.palette.primary.dark, 0.6) },
                     boxShadow: `0 8px 16px ${alpha(theme.palette.primary.dark, 0.2)}`,
                   }}
                 >
-                  Access Account
+                  {loading ? "Accessing..." : "Access Account"}
                 </Button>
 
                 <Divider sx={{ my: 4 }}>
