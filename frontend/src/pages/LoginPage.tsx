@@ -10,6 +10,7 @@ import Cookies from "js-cookie";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { api } from "../api/apiPublic.ts";
 import login from "../api/loginService.ts";
+import useAuth from "../hooks/useAuth";
 import type { LoginRequest } from "../types/authTypes.ts";
 
 const Login = () => {
@@ -36,12 +37,40 @@ const Login = () => {
     verifyUser();
   }, []);
 
-  const handleSubmit = async () => {
+  const { refreshProfile } = useAuth();
+
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
+    setErrorMessage(null);
+    setLoadingSubmit(true);
     const loginData: LoginRequest = { email, password };
-    const res = await login(loginData);
-    if (res.success) {
-      Cookies.set("access_token", res.data.jwt, { secure: true, sameSite: "strict" });
-      navigate("/dashboard");
+    try {
+      const res = await login(loginData);
+      if (res.success) {
+        // set secure cookie only when served over https
+        const isSecure = typeof window !== "undefined" && window.location.protocol === "https:";
+        Cookies.set("access_token", res.data.jwt, { secure: isSecure, sameSite: "strict", expires: 7 });
+
+        // refresh auth context so UI picks up profile & balance
+        try {
+          await refreshProfile();
+        } catch (err) {
+          // non-fatal — still navigate
+        }
+
+        navigate("/dashboard");
+        return;
+      }
+
+      // handle known failure reasons
+      setErrorMessage(typeof res.data === "string" ? res.data : "Login failed");
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Login failed");
+    } finally {
+      setLoadingSubmit(false);
     }
   };
 
@@ -142,7 +171,7 @@ const Login = () => {
                 </Typography>
               </Box>
 
-              <Box component="form" noValidate>
+              <Box component="form" noValidate onSubmit={handleSubmit}>
                 <TextField
                   margin="normal"
                   fullWidth
@@ -187,7 +216,7 @@ const Login = () => {
                   fullWidth
                   variant="contained"
                   size="large"
-                  onClick={handleSubmit}
+                  type="submit"
                   sx={{
                     py: 2,
                     fontWeight: 800,
@@ -199,8 +228,14 @@ const Login = () => {
                     boxShadow: `0 8px 16px ${alpha(theme.palette.primary.dark, 0.2)}`,
                   }}
                 >
-                  Access Account
+                  {loadingSubmit ? "Signing in..." : "Access Account"}
                 </Button>
+
+                {errorMessage && (
+                  <Typography color="error" variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
+                    {errorMessage}
+                  </Typography>
+                )}
 
                 <Divider sx={{ my: 4 }}>
                   <Typography variant="caption" color="text.disabled" sx={{ fontWeight: 800, letterSpacing: 1 }}>

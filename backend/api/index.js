@@ -1,6 +1,9 @@
+import serverless from 'serverless-http';
 import app from '../src/app.js';
+import connectDB from '../src/services/db.service.js';
 
-// Vercel's Node runtime can use an Express app exported as the default export.
-// This file exposes the existing Express `app` as a serverless handler at /api/*.
+// Ensure DB connection at cold start (top-level await supported in ESM)
+await connectDB();
 
-export default app;
+// Export a serverless-compatible handler wrapping the Express app
+export default serverless(app);
