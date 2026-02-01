@@ -23,7 +23,8 @@
     },
     {
       "src": "^(.*)$",
-      "dest": "/dist/index.html"
+      "dest": "/frontend/index.html"
     }
-  ]
+  ],
+  "outputDirectory": "frontend/dist"
 }
