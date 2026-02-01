@@ -15,9 +15,13 @@ app.use(cors({
 
 app.use(express.json());
 
+// Mount routes - handle both /api/v1 (for Vercel) and /v1 (for local dev)
 app.use('/api/v1', authRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
+app.use('/v1', authRoutes);
+app.use('/v1/transactions', transactionRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 export default app;
