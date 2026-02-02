@@ -1,14 +1,29 @@
 import 'dotenv/config';
-import app from './app.js';
-import connectDB from './services/db.service.js';
+import express from 'express';
+import connectDB from '../services/db.service.js';
+import app from '../app.js';
 
-const PORT = process.env.PORT;
+let isDBConnected = false;
 
-try {
-  await connectDB();
-} catch (err) {
-  console.error('MongoDB connection failed', err);
-  process.exit(1);
+async function ensureDBConnection() {
+  if (!isDBConnected) {
+    try {
+      await connectDB();
+      isDBConnected = true;
+      console.log('MongoDB connected');
+    } catch (err) {
+      console.error('MongoDB connection failed', err);
+      throw err;
+    }
+  }
 }
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+export default async function handler(req, res) {
+  try {
+    await ensureDBConnection();
+
+    app(req, res);
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
+}
