@@ -1,23 +1,21 @@
 import mongoose from 'mongoose';
 
+/**
+ * Connect to MongoDB. Idempotent: safe to call multiple times (e.g. in serverless).
+ * Reuses existing connection when mongoose.connection.readyState === 1.
+ * Does NOT call process.exit() so it's safe for Vercel serverless.
+ */
 const connectDB = async () => {
-  try {
-    // Skip if already connected (useful for serverless warm starts)
-    if (mongoose.connection.readyState === 1) {
-      console.log('MongoDB already connected');
-      return;
-    }
-
-    await mongoose.connect(process.env.MONGODB_URI, {
-      autoIndex: true
-    });
-
-    console.log('MongoDB connected');
-  } catch (err) {
-    console.error('MongoDB connection failed:', err.message);
-    // Don't exit process in serverless environment - throw error instead
-    throw err;
+  if (mongoose.connection.readyState === 1) {
+    return;
   }
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI is not set');
+  }
+  await mongoose.connect(process.env.MONGODB_URI, {
+    autoIndex: true,
+  });
+  console.log('MongoDB connected');
 };
 
 export default connectDB;

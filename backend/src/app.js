@@ -4,24 +4,12 @@ import authRoutes from './routes/auth.routes.js';
 import transactionRoutes from './routes/transaction.routes.js';
 
 const app = express();
-
-// Enable CORS for all routes
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
-// Mount routes - handle both /api/v1 (for Vercel) and /v1 (for local dev)
 app.use('/api/v1', authRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
-app.use('/v1', authRoutes);
-app.use('/v1/transactions', transactionRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 export default app;

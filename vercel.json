@@ -1,30 +1,10 @@
 {
-    "version": 2,
-    "buildCommand": "cd frontend && npm install && npm run build",
-    "outputDirectory": "frontend/dist",
-    "functions": {
-        "backend/api/index.js": {
-            "runtime": "nodejs20.x"
-        }
-    },
-    "rewrites": [
-        {
-            "source": "/api/:path*",
-            "destination": "/backend/api/index.js"
-        }
-    ],
-    "routes": [
-        {
-            "src": "/assets/(.*)",
-            "dest": "/frontend/assets/$1"
-        },
-        {
-            "src": "/(.*\\..+)",
-            "dest": "/frontend/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "/frontend/index.html"
-        }
-    ]
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "npm install && cd frontend && npm install",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api?path=$1" }
+  ]
 }

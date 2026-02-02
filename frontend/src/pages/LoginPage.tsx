@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import {
   Box, TextField, Typography, Button, IconButton, InputAdornment,
-  alpha, Divider, Paper, Dialog, DialogTitle,
+  alpha, Divider, Paper, Container, Dialog, DialogTitle,
   DialogContent, DialogContentText, DialogActions
 } from "@mui/material";
-import { LockOutlined, Shield, Visibility, VisibilityOff, RadioButtonChecked, InfoOutlined } from "@mui/icons-material";
+import { LockOutlined, Shield, Visibility, VisibilityOff, VerifiedUser, Security, RadioButtonChecked, InfoOutlined } from "@mui/icons-material";
 import { theme } from "../theme/theme.ts";
 import Cookies from "js-cookie";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -36,20 +36,12 @@ const Login = () => {
     verifyUser();
   }, []);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleSubmit = async () => {
     const loginData: LoginRequest = { email, password };
     const res = await login(loginData);
     if (res.success) {
       Cookies.set("access_token", res.data.jwt, { secure: true, sameSite: "strict" });
       navigate("/dashboard");
-    } else {
-      const message = res.data === "INVALID_CREDENTIALS"
-        ? "Invalid email or password."
-        : res.data === "SERVER_ERROR"
-          ? "Server error. Please try again later."
-          : "Unable to connect. Check your network.";
-      alert(message);
     }
   };
 
@@ -150,7 +142,7 @@ const Login = () => {
                 </Typography>
               </Box>
 
-              <Box component="form" noValidate onSubmit={(e) => handleSubmit(e)}>
+              <Box component="form" noValidate>
                 <TextField
                   margin="normal"
                   fullWidth
@@ -195,7 +187,7 @@ const Login = () => {
                   fullWidth
                   variant="contained"
                   size="large"
-                  onClick={() => handleSubmit()}
+                  onClick={handleSubmit}
                   sx={{
                     py: 2,
                     fontWeight: 800,
