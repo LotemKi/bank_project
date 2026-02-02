@@ -1,4 +1,4 @@
-import { Box, Paper, Typography, Button, Grid, alpha } from "@mui/material";
+import { Box, Paper, Typography, Button, alpha } from "@mui/material";
 import { theme } from "../theme/theme";
 import { Send } from "@mui/icons-material";
 

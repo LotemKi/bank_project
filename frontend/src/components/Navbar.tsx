@@ -1,6 +1,6 @@
-import { Avatar, Box, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, Divider, Typography, alpha, Paper } from "@mui/material";
+import { Avatar, Box, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, Divider, Typography, alpha } from "@mui/material";
 import React, { useState } from "react";
-import { Person, Logout, Badge, ContactPhone, MailOutline, Security } from "@mui/icons-material"; // Added more icons
+import { Logout, Badge, ContactPhone, MailOutline, Security } from "@mui/icons-material"; // Added more icons
 import { theme } from "../theme/theme";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
