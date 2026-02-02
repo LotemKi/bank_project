@@ -10,9 +10,8 @@ app.use(express.json());
 // ---------- CORS middleware ----------
 app.use(cors({
     origin: [
-        'https://bank-project-front-arp1py62e-lotems-projects-b27caaca.vercel.app'
+        process.env.FRONTEND_URL
     ],
-    credentials: true
 }));
 // --------------------------------------
 
