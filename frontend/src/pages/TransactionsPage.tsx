@@ -1,4 +1,4 @@
-import { Box, Typography, alpha, Container, Paper, Button, MenuItem, Select, FormControl } from "@mui/material";
+import { Box, Typography, alpha, Container, Paper, Button, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Transaction } from "../types/userTransactionTypes";
@@ -7,6 +7,7 @@ import { theme } from "../theme/theme";
 import { TransactionsTable, Navbar } from "../components";
 import { useAuth } from "../hooks/useAuth";
 import { ArrowBack, Security, Tune } from "@mui/icons-material";
+import { History } from "@mui/icons-material";
 
 export default function TransactionsPage() {
   const navigate = useNavigate();

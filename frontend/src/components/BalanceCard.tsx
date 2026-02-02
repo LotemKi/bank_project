@@ -21,7 +21,6 @@ export default function BalanceCard({ balance, onTransfer }: Props) {
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    // This forces the width logic
                     width: '100%',
                     maxWidth: '1300px',
                     boxSizing: 'border-box'
