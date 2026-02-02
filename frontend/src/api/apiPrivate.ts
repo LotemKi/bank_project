@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const apiPrivate = axios.create({
-  baseURL: "/api/v1", 
+  baseURL: import.meta.env.VITE_API_URL || "/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,7 +17,7 @@ apiPrivate.interceptors.response.use(
 
 apiPrivate.interceptors.request.use(
   (config) => {
-    const token = Cookies.get("access_token"); 
+    const token = Cookies.get("access_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
