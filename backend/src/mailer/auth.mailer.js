@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 export const sendVerificationMail = async (email, token) => {
   const verifyUrl = `${process.env.FRONTEND_URL}/login?token=${token}`;
-  const logoUrl = `../assets/bank_logo.png`;
+  const logoUrl = "https://lokbank.vercel.app/assets/bank_logo-eFIoGbRI.png";
 
   await fetch('https://api.resend.com/emails', {
     method: 'POST',
