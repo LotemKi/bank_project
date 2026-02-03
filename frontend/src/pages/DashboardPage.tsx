@@ -14,6 +14,8 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    if (loading || !profile) return;
+
     const fetchTx = async () => {
       try {
         const resTx = await apiPrivate.get("/transactions", {
@@ -25,7 +27,7 @@ const Dashboard = () => {
       }
     };
     fetchTx();
-  }, [navigate]);
+  }, [loading, profile, navigate]);
 
   if (loading) return <p>Loading...</p>;
 
