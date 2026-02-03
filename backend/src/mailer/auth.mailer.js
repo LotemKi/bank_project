@@ -11,7 +11,7 @@ export const sendVerificationMail = async (email, token) => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'LOK Bank <signup@lokbank.com>',
+      from: 'LOK Bank <sandbox@resend.dev>',
       to: email,
       subject: 'Welcome to LOK Bank – Verify Your Account',
       html: `
