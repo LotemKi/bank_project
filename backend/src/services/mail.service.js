@@ -5,9 +5,10 @@ export const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.GMAIL_USER,   
+    user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASS   // App Password
   }
 });
 
 export default transporter;
+
