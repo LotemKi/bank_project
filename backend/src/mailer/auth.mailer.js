@@ -22,14 +22,14 @@ export const sendVerificationMail = async (email, token) => {
 
   <div style="height: 6px; background-color: #d4af37; width: 100%;"></div>
 
-  <div style="background-color: #002117; padding: 40px 20px; text-align: center;">
+  <div style="background-color: #002117; padding: 10px 10px; text-align: center;">
     <img src="${logoUrl}" width="200" alt="LOK Bank Logo" style="display:block; margin:auto;" />
     <div style="margin-top: 20px; color: #d4af37; font-size: 14px; letter-spacing: 2px; font-weight: 800; text-transform: uppercase; opacity: 0.9;">
       <span style="color: #4caf50; font-size: 14px;">●</span> SECURE SERVER ACTIVE
     </div>
   </div>
 
-  <div style="padding: 40px; color: #002117; line-height: 1.8; font-size: 16px;">
+  <div style="padding: 10px; color: #002117; line-height: 1.8; font-size: 16px;">
     <h1 style="color: #002117; font-size: 28px; font-weight: 900; margin-bottom: 10px;">Create Account</h1>
     <div style="height: 4px; width: 50px; background-color: #d4af37; margin-bottom: 25px;"></div>
 
@@ -59,9 +59,9 @@ export const sendVerificationMail = async (email, token) => {
     </p>
   </div>
 
-  <div style="padding: 0 40px;"><hr style="border: none; border-top: 1px solid #eee;" /></div>
+  <div style="padding: 0 10px;"><hr style="border: none; border-top: 1px solid #eee;" /></div>
 
-  <div style="padding: 30px 40px; text-align: center; font-size: 13px; color: #999; letter-spacing: 0.5px;">
+  <div style="padding: 10px 10px; text-align: center; font-size: 13px; color: #999; letter-spacing: 0.5px;">
     <p style="margin: 0; font-weight: 800; color: #002117; opacity: 0.6; text-transform: uppercase;">LOK Bank Infrastructure © 2026</p>
     <p style="margin: 5px 0;">Certified Secure Environment | Tel Aviv, Israel</p>
     <p style="margin-top: 10px; color: #d4af37; font-weight: 900;">AES-256 BIT ENCRYPTED COMMUNICATION</p>
