@@ -21,7 +21,7 @@ export const sendVerificationMail = async (email, token) => {
     body: JSON.stringify({
       sender: {
         name: 'LOK Bank',
-        email: 'no-reply@brevo.com',
+        email: process.env.GMAIL_USER,
       },
       to: [
         {
