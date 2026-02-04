@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const logoPath = path.join(__dirname, '../../assets/bank_logo.png');
+const logoPath = path.join(__dirname, '../assets/bank_logo.png');
 const logoBase64 = fs.readFileSync(logoPath).toString('base64');
 
 export const sendVerificationMail = async (email, token) => {
@@ -60,7 +60,7 @@ export const sendVerificationMail = async (email, token) => {
 
     <p style="font-size: 16px;">
       Welcome aboard,<br/>
-      <strong style="color:#d4af37;">The LOK Bank Infrastructure Team</strong>
+      <strong style="color:#d4af37;">LOK Bank</strong>
     </p>
   </div>
 </div>
