@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-export const sendVerificationMail = async (email: string, token: string) => {
+export const sendVerificationMail = async (email, token) => {
   const verifyUrl = `${process.env.FRONTEND_URL}/login?token=${token}`;
   const logoUrl = "https://lokbank.vercel.app/assets/bank_logo-eFIoGbRI.png"; // public logo URL
 
