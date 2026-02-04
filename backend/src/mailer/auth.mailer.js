@@ -21,7 +21,7 @@ export const sendVerificationMail = async (email, token) => {
     body: JSON.stringify({
       sender: {
         name: 'LOK Bank',
-        email: 'noreply@lokbank.com', // can be fake, Brevo allows it initially
+        email: 'no-reply@brevo.com',
       },
       to: [
         {
