@@ -1,8 +1,11 @@
 import fetch from 'node-fetch';
+import bcrypt from 'bcryptjs';
 
-export const sendVerificationMail = async (email, token) => {
-  const verifyUrl = `${process.env.FRONTEND_URL}/login?token=${token}`;
+export const sendVerificationMail = async (email, userId) => {
   const logoUrl = "https://lokbank.vercel.app/assets/bank_logo-eFIoGbRI.png"; // public logo URL
+  const encryptedID = await bcrypt.hash(userId, saltRounds);
+
+  const verifyUrl = `${process.env.FRONTEND_URL}/login?token=${encryptedID}`;
 
   const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',

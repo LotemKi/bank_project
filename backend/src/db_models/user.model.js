@@ -8,8 +8,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true, select: false }, // hashed password
     phone: { type: String, required: true },
-    verificationStatus: { type: String, enum: ['PENDING', 'ACTIVE', 'BLOCKED'], default: 'PENDING' }, 
-    verificationToken: { type: String },
+    verificationStatus: { type: String, enum: ['PENDING', 'ACTIVE', 'BLOCKED'], default: 'PENDING' },
     balance: { type: Number, default: 500 }
   },
   {

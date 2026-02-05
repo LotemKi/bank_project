@@ -19,12 +19,10 @@ const signup = async (req, res) => {
     return res.status(409).json({ error: 'User exists' });
   }
 
-  const verificationToken = uuid();
-
   const saltRounds = 10;
 
   const hashedPassword = await bcrypt.hash(password, saltRounds);
-  
+
   // Create new user
   const user = await User.create({
     id: uuid(),
@@ -34,13 +32,12 @@ const signup = async (req, res) => {
     password: hashedPassword,
     phone,
     verificationStatus: 'PENDING',
-    verificationToken, 
     balance: 500
   });
 
   // Send verification email
   try {
-    await sendVerificationMail(email, verificationToken);
+    await sendVerificationMail(email, user.id);
   } catch (err) {
     console.error('Failed to send verification email:', err);
 
@@ -67,20 +64,55 @@ const signup = async (req, res) => {
 
 const verify = async (req, res) => {
   const { token } = req.query;
-  if (!token) return res.status(400).json({ success: false, data: null, error: 'Token required' });
 
-  // Find user by token
-  const user = await User.findOne({ verificationToken: token });
-  if (!user) return res.status(400).json({ success: false, data: null, error: 'Invalid token' });
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: 'Token required'
+    });
+  }
 
-  if (user.verificationStatus === 'BLOCKED') return res.status(400).json({ success: false, data: null, error: 'User is blocked' });
+  let userId;
+  try {
+    userId = decrypt(token);
+  } catch {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: 'Invalid token'
+    });
+  }
 
-  // Verify user
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      data: null,
+      error: 'User not found'
+    });
+  }
+
+  if (user.verificationStatus === 'BLOCKED') {
+    return res.status(403).json({
+      success: false,
+      data: null,
+      error: 'User is blocked'
+    });
+  }
+
+  if (user.verificationStatus === 'ACTIVE') {
+    return res.status(400).json({
+      success: false,
+      data: null,
+      error: 'User already verified'
+    });
+  }
+
   user.verificationStatus = 'ACTIVE';
-  user.verificationToken = undefined; // remove token
   await user.save();
 
-  res.json({
+  return res.json({
     success: true,
     data: {
       userId: user.id,
@@ -143,10 +175,10 @@ const me = async (req, res) => {
     success: true,
     data: {
       profile: {
-        id: user.id, 
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email, 
+        email: user.email,
         phone: user.phone,
         verificationStatus: user.verificationStatus,
       },
