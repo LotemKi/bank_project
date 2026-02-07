@@ -85,7 +85,7 @@ const verify = async (req, res) => {
     });
   }
 
-  const user = await User.findById(userId);
+  const user = await User.findOne({ id: userId });
   if (!user) {
     return res.status(404).json({
       success: false,
