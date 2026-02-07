@@ -1,11 +1,9 @@
 import fetch from 'node-fetch';
-import bcrypt from 'bcryptjs';
+import { encrypt } from '../utils/encryption.js';
 
 export const sendVerificationMail = async (email, userId) => {
-  const saltRounds = 10;
-
   const logoUrl = "https://lokbank.vercel.app/assets/bank_logo-eFIoGbRI.png"; // public logo URL
-  const encryptedID = await bcrypt.hash(userId, saltRounds);
+  const encryptedId = encrypt(Id);
 
   const verifyUrl = `${process.env.FRONTEND_URL}/login?token=${encryptedID}`;
 

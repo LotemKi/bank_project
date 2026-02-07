@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid';
 import User from '../db_models/user.model.js';
 import { sendVerificationMail } from '../mailer/auth.mailer.js';
 import bcrypt from 'bcryptjs';
+import { decrypt } from '../utils/encryption.js';
 
 /* ========================= SIGNUP ========================= */
 
