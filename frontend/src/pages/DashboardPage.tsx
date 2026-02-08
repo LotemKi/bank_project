@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Box, Typography, Card, Button, alpha, Container } from "@mui/material";
-import { ReceiptLong, History, Chat } from "@mui/icons-material";
+import { ReceiptLong, History } from "@mui/icons-material";
 import { theme } from "../theme/theme";
 import { apiPrivate } from "../api/apiPrivate";
 import type { Transaction } from "../types/userTransactionTypes";
