@@ -76,7 +76,8 @@ const verify = async (req, res) => {
 
   let userId;
   try {
-    userId = decrypt(token);
+    const decodedToken = decodeURIComponent(token);
+    userId = decrypt(decodedToken);
   } catch {
     return res.status(400).json({
       success: false,

@@ -4,8 +4,9 @@ import { encrypt } from '../utils/encryption.js';
 export const sendVerificationMail = async (email, userId) => {
   const logoUrl = "https://lokbank.vercel.app/assets/bank_logo-eFIoGbRI.png"; // public logo URL
   const encryptedId = encrypt(userId);
+  const token = encodeURIComponent(encryptedId);
 
-  const verifyUrl = `${process.env.FRONTEND_URL}/login?token=${encryptedId}`;
+  const verifyUrl = `${process.env.FRONTEND_URL}/login?token=${token}`;
 
   const res = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
