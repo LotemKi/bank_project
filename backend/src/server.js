@@ -3,6 +3,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import app from './app.js';
 import connectDB from './services/db.service.js';
+import { registerChatSocket } from "./sockets/chat.socket.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -18,21 +19,7 @@ export const io = new Server(server, {
     }
 });
 
-io.on('connection', (socket) => {
-    console.log('Client connected:', socket.id);
-
-    socket.on('chatMessage', (msg) => {
-        console.log('Received from client:', msg);
-
-        const botReply = `Bot says: ${msg.split('').reverse().join('')}`;
-
-        socket.emit('botMessage', botReply);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Client disconnected:', socket.id);
-    });
-});
+registerChatSocket(io);
 
 // Start server
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
