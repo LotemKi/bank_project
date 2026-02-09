@@ -1,5 +1,5 @@
-import Transaction from "../models/transaction.model.js";
-import User from "../models/user.model.js";
+import Transaction from "../db_models/transaction.model.js";
+import User from "../db_models/user.model.js";
 
 export async function getRecentTransactions(userEmail, limit = 5) {
     return Transaction.find({
