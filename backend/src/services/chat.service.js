@@ -1,4 +1,4 @@
-import { getBalance, getRecentTransactions } from "./getdata.service";
+import { getBalance, getRecentTransactions } from "./getdata.service.js";
 
 export async function handleChatMessage({ userId, message }) {
     if (/balance/i.test(message)) {
