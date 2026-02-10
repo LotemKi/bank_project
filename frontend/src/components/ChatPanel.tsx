@@ -16,7 +16,6 @@ export function ChatPanel() {
             </div>
 
             <input
-                disabled={!ready}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && sendMessage(input)}

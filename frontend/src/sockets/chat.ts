@@ -28,6 +28,7 @@ export const initSocket = (userId: string) => {
     });
 
     socket.connect();
+
     return socket;
 };
 

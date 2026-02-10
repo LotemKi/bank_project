@@ -31,7 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 Cookies.remove("access_token");
                 setProfile(null);
                 setBalance(null);
-                try { localStorage.removeItem('userId'); } catch (e) { }
             }
         } finally {
             setLoading(false);
