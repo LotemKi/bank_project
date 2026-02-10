@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useChat } from "../hooks/useChat";
 
 export function ChatPanel() {
-    const { messages, sendMessage } = useChat();
+    const { messages, sendMessage, ready } = useChat();
     const [input, setInput] = useState("");
 
     return (
@@ -16,6 +16,7 @@ export function ChatPanel() {
             </div>
 
             <input
+                disabled={!ready}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && sendMessage(input)}

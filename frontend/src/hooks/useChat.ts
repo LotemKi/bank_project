@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSocket } from "../sockets/chat.ts";
+import { getSocket } from "../sockets/chat";
 
 interface ChatMessage {
     sender: "user" | "bot";
@@ -8,11 +8,15 @@ interface ChatMessage {
 
 export function useChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        const socket = getSocket();
-        if (!socket) {
-            console.error("Socket not initialized");
+        let socket;
+
+        try {
+            socket = getSocket();
+            setReady(true);
+        } catch {
             return;
         }
 
@@ -28,14 +32,13 @@ export function useChat() {
     }, []);
 
     const sendMessage = (text: string) => {
+        if (!ready) return;
+
         const socket = getSocket();
-        if (!socket) {
-            console.error("Socket not initialized");
-            return;
-        }
+
         setMessages(prev => [...prev, { sender: "user", text }]);
         socket.emit("chatMessage", text);
     };
 
-    return { messages, sendMessage };
+    return { messages, sendMessage, ready };
 }
