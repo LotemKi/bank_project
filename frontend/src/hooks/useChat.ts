@@ -9,6 +9,7 @@ interface ChatMessage {
 export function useChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [ready, setReady] = useState(false);
+    console.log("usechat in usechat.ts:");
 
     useEffect(() => {
         let socket;
@@ -16,7 +17,10 @@ export function useChat() {
         try {
             socket = getSocket();
             setReady(true);
-        } catch {
+            console.log("setReady(true) in usechat.ts:", socket!.id);
+
+        } catch (err) {
+            console.log(" in usechat.ts:", err);
             return;
         }
 
