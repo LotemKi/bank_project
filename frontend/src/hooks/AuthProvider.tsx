@@ -21,28 +21,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const refreshProfile = async () => {
         setLoading(true);
+        console.log("Refreshing profile...");
         try {
             const res = await apiPrivate.get("/me");
             setProfile(res.data.data.profile);
             setBalance(res.data.data.balance);
         } catch (err: any) {
-            // If unauthorized, clear token
-            if (err.response?.status === 401) {
-                Cookies.remove("access_token");
-                setProfile(null);
-                setBalance(null);
-            }
+            Cookies.remove("access_token");
+            setProfile(null);
+            setBalance(null);
+            console.log("Finished refreshing profile with error:", err);
+
         } finally {
             setLoading(false);
+            console.log("Finished refreshing profile...");
+
         }
     };
 
     useEffect(() => {
-        const token = Cookies.get("access_token");
-        if (!token) {
-            setLoading(false);
-            return;
-        }
         refreshProfile();
     }, []);
 
