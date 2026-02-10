@@ -97,7 +97,7 @@ export function ChatPanel() {
                                         <Typography variant="body2">{m.text}</Typography>
                                     </Paper>
                                     <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block", textAlign: isUser ? "right" : "left" }}>
-                                        {isUser ? "You" : "Vault Agent"}
+                                        {isUser ? m.sender.toLowerCase() : m.sender.toLowerCase()}
                                     </Typography>
                                 </Box>
                             );
