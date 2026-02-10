@@ -11,7 +11,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { api } from "../api/apiPublic.ts";
 import login from "../api/loginService.ts";
 import type { LoginRequest } from "../types/authTypes.ts";
-import { useAuth } from "../hooks/useAuth.ts";
+import { useAuthContext } from "../hooks/AuthProvider.tsx";
 
 const Login = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,6 +21,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [openForgot, setOpenForgot] = useState(false); // State for the popup
   const navigate = useNavigate();
+  const { refreshProfile } = useAuthContext();
 
   useEffect(() => {
     if (!verifyToken) return;
@@ -39,7 +40,6 @@ const Login = () => {
 
   const handleSubmit = async () => {
     const loginData: LoginRequest = { email, password };
-    const { refreshProfile } = useAuth();
     const res = await login(loginData);
     if (res.success) {
       Cookies.set("access_token", res.data.jwt, { secure: true, sameSite: "strict" });
