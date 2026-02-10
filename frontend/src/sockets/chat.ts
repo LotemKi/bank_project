@@ -20,7 +20,7 @@ export const initSocket = (userId: string) => {
     });
 
     socket.on("connect", () => {
-        console.log("SOCKET CONNECTED:", socket!.id);
+        console.log("SOCKET CONNECTED in chat.ts:", socket!.id);
     });
 
     socket.on("connect_error", (err) => {
@@ -31,4 +31,9 @@ export const initSocket = (userId: string) => {
     return socket;
 };
 
-export const getSocket = () => socket;
+export function getSocket() {
+    if (!socket) {
+        throw new Error("Socket not initialized in chat.ts");
+    }
+    return socket;
+}
