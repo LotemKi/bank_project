@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    if (loading || !profile) return;
+    if (!profile) return;
 
     const fetchTx = async () => {
       try {
@@ -28,7 +28,7 @@ const Dashboard = () => {
       }
     };
     fetchTx();
-  }, [loading, profile, navigate]);
+  }, [profile, navigate]);
 
   if (loading) return <p>Loading...</p>;
 

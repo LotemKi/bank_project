@@ -28,8 +28,6 @@ export const initSocket = (userId: string) => {
     });
 
     socket.connect();
-    console.log("SOCKET CONNECTED socket.connect in chat.ts:", socket!.id);
-
     return socket;
 };
 
