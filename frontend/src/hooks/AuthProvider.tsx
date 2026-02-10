@@ -21,7 +21,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const refreshProfile = async () => {
         setLoading(true);
-        console.log("Refreshing profile...");
         try {
             const res = await apiPrivate.get("/me");
             setProfile(res.data.data.profile);
@@ -30,11 +29,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             Cookies.remove("access_token");
             setProfile(null);
             setBalance(null);
-            console.log("Finished refreshing profile with error:", err);
 
         } finally {
             setLoading(false);
-            console.log("Finished refreshing profile...");
 
         }
     };
