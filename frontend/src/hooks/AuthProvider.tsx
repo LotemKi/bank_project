@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import type { UserProfile } from "../types/userTransactionTypes";
 import { apiPrivate } from "../api/apiPrivate";
 import Cookies from "js-cookie";
+import { initSocket } from "../sockets/chat.ts";
 
 type AuthContextType = {
     profile: UserProfile | null;
@@ -24,14 +25,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const res = await apiPrivate.get("/me");
             setProfile(res.data.data.profile);
             setBalance(res.data.data.balance);
-            // store userId for socket handshake (used by the socket client)
-            try {
-                if (res.data?.data?.profile?.id) {
-                    localStorage.setItem('userId', res.data.data.profile.id);
-                }
-            } catch (e) {
-                // ignore localStorage failures in restricted environments
-            }
         } catch (err: any) {
             // If unauthorized, clear token
             if (err.response?.status === 401) {
@@ -48,6 +41,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     useEffect(() => {
         refreshProfile();
     }, []);
+
+    useEffect(() => {
+        if (profile?.id) {
+            initSocket(profile.id);
+        }
+    }, [profile?.id]);
 
     return (
         <AuthContext.Provider value={{ profile, balance, loading, refreshProfile, setProfile }}>
