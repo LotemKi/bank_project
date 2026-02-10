@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useChat } from "../hooks/useChat";
 
 export function ChatPanel() {
-    const { messages, sendMessage, ready } = useChat();
+    const { messages, sendMessage } = useChat();
     const [input, setInput] = useState("");
 
     return (
