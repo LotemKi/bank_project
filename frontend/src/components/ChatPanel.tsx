@@ -58,9 +58,9 @@ export function ChatPanel() {
                     {/* Header */}
                     <Box sx={{ p: 2, bgcolor: "primary.main", color: "white", display: "flex", alignItems: "center", gap: 1.5 }}>
                         <Avatar sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}>
-                            <AccountBalanceIcon sx={{ fontSize: 18, color: "primary.dark" }} />
+                            <ChatIcon sx={{ fontSize: 18, color: "primary.dark" }} />
                         </Avatar>
-                        <Typography variant="subtitle2" fontWeight="bold">Vault Support</Typography>
+                        <Typography variant="subtitle1" fontWeight="bold">LOK Bank Support</Typography>
                     </Box>
 
                     {/* Message Area */}
@@ -73,8 +73,7 @@ export function ChatPanel() {
                         }}
                     >
                         {messages.map((m, i) => {
-                            // "me" = Deep Forest (Right) | "Bot" = Grey/Gold (Left)
-                            const isUser = m.sender.toLowerCase() === "me";
+                            const isUser = m.sender.toLowerCase() === "user";
 
                             return (
                                 <Box
@@ -97,7 +96,7 @@ export function ChatPanel() {
                                         <Typography variant="body2">{m.text}</Typography>
                                     </Paper>
                                     <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block", textAlign: isUser ? "right" : "left" }}>
-                                        {isUser ? m.sender.toLowerCase() : m.sender.toLowerCase()}
+                                        {isUser ? "You" : "LOK Bank Agent"}
                                     </Typography>
                                 </Box>
                             );
@@ -115,7 +114,9 @@ export function ChatPanel() {
                             disabled={!ready}
                             onChange={e => setInput(e.target.value)}
                             onKeyDown={e => e.key === "Enter" && handleSend()}
-                            InputProps={{ disableUnderline: true, sx: { fontSize: '0.9rem' } }}
+                            slotProps={{
+                                input: { disableUnderline: true, sx: { fontSize: '0.9rem' } }
+                            }}
                         />
                         <IconButton
                             onClick={handleSend}
