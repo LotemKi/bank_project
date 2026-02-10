@@ -10,6 +10,7 @@ const PORT = process.env.PORT || 5000;
 await connectDB();
 
 const server = http.createServer(app);
+console.log("after createServer");
 
 // Initialize Socket.IO
 export const io = new Server(server, {
@@ -19,7 +20,10 @@ export const io = new Server(server, {
     }
 });
 
+console.log("after new Server");
+
 registerChatSocket(io);
+console.log("after registerChatSocket");
 
 // Start server
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

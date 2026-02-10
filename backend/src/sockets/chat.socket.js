@@ -2,29 +2,24 @@ import { handleChatMessage } from "../services/chat.service.js";
 
 export function registerChatSocket(io) {
     io.on("connection", (socket) => {
-        const { userId } = socket.handshake.auth;
+        console.log("before SOCKET handshake CONNECTED:", socket.id, "USER ID:", socket.userId);
 
-        console.log("CONNECTED userId =", userId);
-
-        if (!userId) {
-            socket.emit("botMessage", "Unauthorized");
-            return;
-        }
-
-        socket.userId = userId;
+        socket.userId = socket.handshake.auth.userId;
+        console.log("SOCKET CONNECTED:", socket.id, "USER ID:", socket.userId);
 
         socket.on("chatMessage", async (message) => {
-            console.log("MESSAGE:", socket.userId, message);
+            if (!socket.userId) {
+                return socket.emit("botMessage", "Unauthorized");
+            }
 
             const response = await handleChatMessage({
                 userId: socket.userId,
                 message
             });
 
-            console.log("RESPONSE:", response);
-
             socket.emit("botMessage", response);
         });
     });
 }
+
 

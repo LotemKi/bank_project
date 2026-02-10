@@ -24,12 +24,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const res = await apiPrivate.get("/me");
             setProfile(res.data.data.profile);
             setBalance(res.data.data.balance);
+            // store userId for socket handshake (used by the socket client)
+            try {
+                if (res.data?.data?.profile?.id) {
+                    localStorage.setItem('userId', res.data.data.profile.id);
+                }
+            } catch (e) {
+                // ignore localStorage failures in restricted environments
+            }
         } catch (err: any) {
             // If unauthorized, clear token
             if (err.response?.status === 401) {
                 Cookies.remove("access_token");
                 setProfile(null);
                 setBalance(null);
+                try { localStorage.removeItem('userId'); } catch (e) { }
             }
         } finally {
             setLoading(false);
