@@ -7,8 +7,9 @@ import { theme } from "../theme/theme";
 import { TransactionsTable, Navbar } from "../components";
 import { useAuth } from "../hooks/useAuth";
 import { ArrowBack, Security, Tune } from "@mui/icons-material";
+import { ChatPanel } from "../components/ChatPanel";
 
-export default function TransactionsPage() {
+const TransactionsPage = () => {
   const navigate = useNavigate();
   const { profile, loading: authLoading, balance } = useAuth();
 
@@ -170,6 +171,9 @@ export default function TransactionsPage() {
           </Box>
         </Container>
       </Box>
+      <ChatPanel />
     </Box >
   );
 }
+
+export default TransactionsPage;

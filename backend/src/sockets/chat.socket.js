@@ -5,6 +5,11 @@ export function registerChatSocket(io) {
 
         socket.userId = socket.handshake.auth.userId;
 
+        socket.emit("agent_message", {
+            role: "bot",
+            content: "Hello. How can I help you today?"
+        });
+
         socket.on("chatMessage", async (message) => {
             if (!socket.userId) {
                 return socket.emit("botMessage", "Unauthorized");

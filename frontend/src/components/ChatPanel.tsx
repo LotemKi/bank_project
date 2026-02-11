@@ -11,7 +11,6 @@ export function ChatPanel() {
     const [isOpen, setIsOpen] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll logic (Fixed TS type)
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;

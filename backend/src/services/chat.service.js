@@ -1,71 +1,82 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getBalance, getRecentTransactions } from "./getdata.service.js";
+import { sendMoney } from "./sendmoney.service.js";
 
-// Initialize with the key from Render
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const tools = [{
     functionDeclarations: [
         {
             name: "getBalance",
-            description: "Get user's current balance in ILS",
+            description: "Get user's balance in ILS. Use this when the user asks 'how much money do I have'.",
             parameters: { type: "OBJECT", properties: {} }
         },
         {
             name: "getRecentTransactions",
-            description: "Get the last transaction",
+            description: "Get the most recent transaction details.",
             parameters: { type: "OBJECT", properties: {} }
+        },
+        {
+            name: "sendMoney",
+            description: "Transfer money to another contact",
+            parameters: {
+                type: "OBJECT",
+                properties: {
+                    amount: { type: "NUMBER", description: "The amount in ILS" },
+                    recipientName: { type: "STRING", description: "The name of the person" }
+                },
+                required: ["amount", "recipientName"]
+            }
         }
     ]
 }];
 
-export async function handleChatMessage({ userId, message }) {
+export async function handleChatMessage({ userId, message, history = [] }) {
     try {
-        // Change this part in your code:
         const model = genAI.getGenerativeModel({
             model: "gemini-3-flash-preview",
             tools: tools,
+            systemInstruction: "You are a professional banking assistant in Israel. Be precise and secure.",
             generationConfig: {
-                thinkingConfig: {
-                    thinkingLevel: "low"
-                }
+                thinkingConfig: { thinkingLevel: "low" }
             }
         });
 
-        const chat = model.startChat();
-        const result = await chat.sendMessage(message);
+        const chat = model.startChat({ history });
+        let result = await chat.sendMessage(message);
+        let response = result.response;
 
-        // Gemini 3 uses a more structured response object
-        const response = result.response;
-        const calls = response.functionCalls();
+        while (response.functionCalls()?.length > 0) {
+            const functionResponses = [];
 
-        if (calls && calls.length > 0) {
-            const call = calls[0];
-            console.log("AI using tool:", call.name);
+            for (const call of response.functionCalls()) {
+                console.log(`[AGENT ACTION]: Calling ${call.name}`);
 
-            let data;
-            if (call.name === "getBalance") {
-                data = await getBalance(userId);
-            } else if (call.name === "getRecentTransactions") {
-                data = await getRecentTransactions(userId, 1);
+                let data;
+                if (call.name === "getBalance") data = await getBalance(userId);
+                if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId, 1);
+                if (call.name === "sendMoney") data = await sendMoney(userId, call.args.amount, call.args.recipientName, call.args.description || "Transfer");
+
+                functionResponses.push({
+                    functionResponse: {
+                        name: call.name,
+                        response: { content: data }
+                    }
+                });
             }
 
-            // Send data back to Gemini 3 to generate the natural language text
-            const finalResult = await chat.sendMessage([{
-                functionResponse: {
-                    name: call.name,
-                    response: { content: data }
-                }
-            }]);
-
-            return finalResult.response.text();
+            const nextTurn = await chat.sendMessage(functionResponses);
+            response = nextTurn.response;
         }
 
-        return response.text();
+        return {
+            text: response.text(),
+            newHistory: await chat.getHistory()
+        };
 
     } catch (error) {
-        // If you hit a 429 here, it means you've sent >15 messages in 60 seconds
-        console.error("Gemini 3 Error:", error.message);
-        return "The Vault is stabilizing. Please try again in a moment.";
+        console.error("CRITICAL CHAT ERROR:", error.message);
+        if (error.message.includes("429")) return { text: "System busy. Please wait a few minutes." };
+        return { text: "The Agent encountered an error. Please try again." };
     }
 }
