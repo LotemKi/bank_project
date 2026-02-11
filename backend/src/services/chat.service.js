@@ -21,12 +21,14 @@ const tools = [{
 
 export async function handleChatMessage({ userId, message }) {
     try {
+        // Change this part in your code:
         const model = genAI.getGenerativeModel({
-            model: "gemini-3-flash-preview", // Use the 2026 version
+            model: "gemini-3-flash-preview",
             tools: tools,
             generationConfig: {
-                // 'low' minimizes latency for banking apps
-                thinking_level: "low"
+                thinkingConfig: {
+                    thinkingLevel: "low"
+                }
             }
         });
 
