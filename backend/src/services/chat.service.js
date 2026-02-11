@@ -2,6 +2,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getBalance, getRecentTransactions } from "./getdata.service.js";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+console.log("DEBUG: Key exists?", !!process.env.GEMINI_API_KEY);
+console.log("DEBUG: Key prefix:", process.env.GEMINI_API_KEY?.substring(0, 7));
 
 const tools = [{
     functionDeclarations: [
