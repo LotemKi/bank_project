@@ -1,70 +1,67 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getBalance, getRecentTransactions } from "./getdata.service.js";
 
-// Initialize the API with your key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Define the "Tools" Gemini is allowed to use
-const tools = [
-    {
-        functionDeclarations: [
-            {
-                name: "getBalance",
-                description: "Fetch the user's current account balance in ILS (₪).",
-            },
-            {
-                name: "getRecentTransactions",
-                description: "Fetch the most recent transactions for the user account.",
-            },
-        ],
-    },
-];
+const tools = [{
+    functionDeclarations: [
+        {
+            name: "getBalance",
+            description: "Get user's current balance in ILS",
+            parameters: { type: "OBJECT", properties: {} } // Required for some versions
+        },
+        {
+            name: "getRecentTransactions",
+            description: "Get the last transaction",
+            parameters: { type: "OBJECT", properties: {} }
+        }
+    ]
+}];
 
 export async function handleChatMessage({ userId, message }) {
-    const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
-        tools: tools,
-        systemInstruction: "You are the Vault Secure Assistant. You have access to the user's bank data via tools. Be professional, concise, and helpful."
-    });
+    try {
+        const model = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash",
+            tools: tools
+        });
 
-    // 1. Start a chat session
-    const chat = model.startChat();
+        const chat = model.startChat();
+        const result = await chat.sendMessage(message);
+        const response = result.response;
 
-    // 2. Ask Gemini to process the message
-    let result = await chat.sendMessage(message);
-    let response = result.response;
+        // DEBUG: See what the AI is thinking
+        console.log("AI Response Type:", response.candidates[0].content.parts[0]);
 
-    // 3. Handle Function Calls (The "Smart" Part)
-    // If Gemini decides it needs data, it won't return text; it returns a function call.
-    const calls = response.functionCalls();
+        const calls = response.functionCalls();
 
-    if (calls && calls.length > 0) {
-        const call = calls[0]; // Let's handle the first requested tool
-        let toolData;
+        // CASE A: AI wants data
+        if (calls && calls.length > 0) {
+            const call = calls[0];
+            console.log("AI requested tool:", call.name);
 
-        // Route the AI's request to your actual services
-        if (call.name === "getBalance") {
-            const balance = await getBalance(userId);
-            toolData = { balance: `₪${balance}` };
-        }
-        else if (call.name === "getRecentTransactions") {
-            const tx = await getRecentTransactions(userId, 1);
-            toolData = { latest_transaction: tx };
-        }
+            let data;
+            if (call.name === "getBalance") {
+                data = await getBalance(userId);
+            } else if (call.name === "getRecentTransactions") {
+                data = await getRecentTransactions(userId, 1);
+            }
 
-        // 4. Send the database result back to Gemini so it can "talk" to the user
-        const finalResponse = await chat.sendMessage([
-            {
+            // IMPORTANT: You must send the result BACK to get the final text
+            const finalResult = await chat.sendMessage([{
                 functionResponse: {
                     name: call.name,
-                    response: toolData
+                    response: { content: data }
                 }
-            }
-        ]);
+            }]);
 
-        return finalResponse.response.text();
+            return finalResult.response.text();
+        }
+
+        // CASE B: Standard text (like "Hello")
+        return response.text();
+
+    } catch (error) {
+        console.error("Chat Error:", error);
+        return "The Vault is temporarily offline. Please try again shortly.";
     }
-
-    // If no data was needed (e.g., the user just said "Hello"), return the text
-    return response.text();
 }
