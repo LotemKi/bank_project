@@ -3,7 +3,6 @@ import { Box, TextField, IconButton, Typography, Paper, Avatar, Fab, Zoom, } fro
 import SendIcon from "@mui/icons-material/Send";
 import ChatIcon from "@mui/icons-material/Chat";
 import CloseIcon from "@mui/icons-material/Close";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import { useChat } from "../hooks/useChat";
 
 export function ChatPanel() {
