@@ -1,16 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { getBalance, getRecentTransactions } from "./getdata.service.js";
 
+// Initialize with the key from Render
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-console.log("DEBUG: Key exists?", !!process.env.GEMINI_API_KEY);
-console.log("DEBUG: Key prefix:", process.env.GEMINI_API_KEY?.substring(0, 7));
 
 const tools = [{
     functionDeclarations: [
         {
             name: "getBalance",
             description: "Get user's current balance in ILS",
-            parameters: { type: "OBJECT", properties: {} } // Required for some versions
+            parameters: { type: "OBJECT", properties: {} }
         },
         {
             name: "getRecentTransactions",
@@ -23,23 +22,24 @@ const tools = [{
 export async function handleChatMessage({ userId, message }) {
     try {
         const model = genAI.getGenerativeModel({
-            model: "gemini-3-flash-preview",
-            tools: tools
+            model: "gemini-3-flash-preview", // Use the 2026 version
+            tools: tools,
+            generationConfig: {
+                // 'low' minimizes latency for banking apps
+                thinking_level: "low"
+            }
         });
 
         const chat = model.startChat();
         const result = await chat.sendMessage(message);
+
+        // Gemini 3 uses a more structured response object
         const response = result.response;
-
-        // DEBUG: See what the AI is thinking
-        console.log("AI Response Type:", response.candidates[0].content.parts[0]);
-
         const calls = response.functionCalls();
 
-        // CASE A: AI wants data
         if (calls && calls.length > 0) {
             const call = calls[0];
-            console.log("AI requested tool:", call.name);
+            console.log("AI using tool:", call.name);
 
             let data;
             if (call.name === "getBalance") {
@@ -48,7 +48,7 @@ export async function handleChatMessage({ userId, message }) {
                 data = await getRecentTransactions(userId, 1);
             }
 
-            // IMPORTANT: You must send the result BACK to get the final text
+            // Send data back to Gemini 3 to generate the natural language text
             const finalResult = await chat.sendMessage([{
                 functionResponse: {
                     name: call.name,
@@ -59,11 +59,11 @@ export async function handleChatMessage({ userId, message }) {
             return finalResult.response.text();
         }
 
-        // CASE B: Standard text (like "Hello")
         return response.text();
 
     } catch (error) {
-        console.error("Chat Error:", error);
-        return "The Vault is temporarily offline. Please try again shortly.";
+        // If you hit a 429 here, it means you've sent >15 messages in 60 seconds
+        console.error("Gemini 3 Error:", error.message);
+        return "The Vault is stabilizing. Please try again in a moment.";
     }
 }
