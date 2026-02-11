@@ -1,11 +1,13 @@
 import Transaction from "../db_models/transaction.model.js";
 import User from "../db_models/user.model.js";
 
-export async function getRecentTransactions(userEmail, limit = 5) {
+export async function getRecentTransactions(userId, limit = 5) {
+    const user = await User
+        .findOne({ id: userId })
     return Transaction.find({
         $or: [
-            { fromEmail: userEmail },
-            { toEmail: userEmail }
+            { fromEmail: user.email },
+            { toEmail: user.email }
         ]
     })
         .sort({ createdAt: -1 })
