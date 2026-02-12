@@ -1,7 +1,7 @@
 import Transaction from "../db_models/transaction.model.js";
 import User from "../db_models/user.model.js";
 
-export async function getRecentTransactions(userId, limit = 5) {
+export async function getRecentTransactions(userId) {
     const user = await User
         .findOne({ id: userId })
     return Transaction.find({
@@ -11,7 +11,6 @@ export async function getRecentTransactions(userId, limit = 5) {
         ]
     })
         .sort({ createdAt: -1 })
-        .limit(limit)
         .select("amount fromEmail toEmail status description createdAt");
 }
 

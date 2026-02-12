@@ -23,9 +23,9 @@ const tools = [{
                 type: "OBJECT",
                 properties: {
                     amount: { type: "NUMBER", description: "The amount in ILS" },
-                    recipientName: { type: "STRING", description: "The name of the person" }
+                    recipientEmail: { type: "STRING", description: "The email of the recipient" }
                 },
-                required: ["amount", "recipientName"]
+                required: ["amount", "recipientEmail"]
             }
         }
     ]
@@ -51,8 +51,8 @@ export async function handleChatMessage({ userId, message, history = [] }) {
 
                 let data;
                 if (call.name === "getBalance") data = await getBalance(userId);
-                if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId, 1);
-                if (call.name === "sendMoney") data = await sendMoney(userId, call.args.amount, call.args.recipientName, call.args.description || "Transfer");
+                if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId);
+                if (call.name === "sendMoney") data = await sendMoney(userId, call.args.amount, call.args.recipientEmail, call.args.description || "Transfer");
 
                 functionResponses.push({
                     functionResponse: {
