@@ -34,7 +34,7 @@ const tools = [{
 export async function handleChatMessage({ userId, message, history = [] }) {
     try {
         const model = genAI.getGenerativeModel({
-            model: "gemini-3-flash-preview",
+            model: "gemini-2.5-flash-lite",
             tools: tools,
             systemInstruction: "You are a professional banking assistant in Israel. Be precise and secure.",
             generationConfig: {

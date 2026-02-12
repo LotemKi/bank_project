@@ -7,6 +7,7 @@ import { apiPrivate } from "../api/apiPrivate";
 import { Navbar } from "../components";
 import { useAuth } from "../hooks/useAuth"; // Added to fetch balance
 import { ArrowBack, CheckCircleOutline, InfoOutlined, Security, Send, Shield } from "@mui/icons-material";
+import { ChatPanel } from "../components/ChatPanel";
 
 const TransferPage = () => {
   const navigate = useNavigate();
@@ -304,6 +305,7 @@ const TransferPage = () => {
           </DialogActions>
         </Dialog>
       </Container>
+      <ChatPanel />
     </Box >
   );
 }
