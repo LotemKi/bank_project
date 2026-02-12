@@ -65,13 +65,25 @@ export function ChatPanel() {
                     <Box
                         ref={scrollRef}
                         sx={{
-                            flexGrow: 1, p: 2, overflowY: "auto",
-                            bgcolor: "background.default", display: "flex",
-                            flexDirection: "column", gap: 1.5
+                            flexGrow: 1,
+                            p: 2,
+                            overflowY: "auto",
+                            bgcolor: "background.default",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1.5
                         }}
                     >
                         {messages.map((m, i) => {
-                            const isUser = m.sender.toLowerCase() === "user";
+                            // SAFE SENDER CHECK:
+                            // Use optional chaining (?.) and a fallback value (??)
+                            // This stops the ".toLowerCase()" crash if 'm' or 'sender' is missing.
+                            const sender = (m?.sender ?? "bot").toLowerCase();
+                            const isUser = sender === "user";
+
+                            // SAFE TEXT CHECK:
+                            // Ensures Typography always receives a string.
+                            const messageText = m?.text ?? "⚠️ [Message unavailable - System limit reached]";
 
                             return (
                                 <Box
@@ -91,9 +103,16 @@ export function ChatPanel() {
                                             borderColor: "secondary.main", // Gold border for bot messages
                                         }}
                                     >
-                                        <Typography variant="body2">{m.text}</Typography>
+                                        {/* Render the safe messageText string */}
+                                        <Typography variant="body2">
+                                            {messageText}
+                                        </Typography>
                                     </Paper>
-                                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block", textAlign: isUser ? "right" : "left" }}>
+                                    <Typography
+                                        variant="caption"
+                                        color="text.secondary"
+                                        sx={{ mt: 0.5, display: "block", textAlign: isUser ? "right" : "left" }}
+                                    >
                                         {isUser ? "You" : "LOK Bank Agent"}
                                     </Typography>
                                 </Box>
