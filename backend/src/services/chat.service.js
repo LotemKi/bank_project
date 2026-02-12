@@ -37,9 +37,6 @@ export async function handleChatMessage({ userId, message, history = [] }) {
             model: "gemini-2.5-flash-lite",
             tools: tools,
             systemInstruction: "You are a professional banking assistant in Israel. Be precise and secure.",
-            generationConfig: {
-                thinkingConfig: { thinkingLevel: "low" }
-            }
         });
 
         const chat = model.startChat({ history });

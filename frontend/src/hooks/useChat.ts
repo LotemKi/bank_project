@@ -20,8 +20,15 @@ export function useChat() {
             return;
         }
 
-        const onBotMessage = (text: string) => {
-            setMessages(prev => [...prev, { sender: "bot", text }]);
+        const onBotMessage = (incoming: any) => {
+            const textToDisplay = typeof incoming === "string"
+                ? incoming
+                : (incoming?.text || "⚠️ The AI is currently unavailable.");
+
+            setMessages(prev => [...prev, {
+                sender: "bot",
+                text: textToDisplay
+            }]);
         };
 
         socket.on("botMessage", onBotMessage);
