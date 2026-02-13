@@ -13,7 +13,7 @@ const tools = [{
         },
         {
             name: "getRecentTransactions",
-            description: "Get the most recent transaction details.",
+            description: "Fetch the user's recent transaction history. Use this to calculate totals, find specific past payments, or list recent activity.",
             parameters: { type: "OBJECT", properties: {} }
         },
         {

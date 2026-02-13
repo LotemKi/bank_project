@@ -2,8 +2,9 @@ import Transaction from "../db_models/transaction.model.js";
 import User from "../db_models/user.model.js";
 
 export async function getRecentTransactions(userId) {
-    const user = await User
-        .findOne({ id: userId })
+    const user = await User.findOne({ id: userId });
+    if (!user) throw new Error("User not found");
+
     return Transaction.find({
         $or: [
             { fromEmail: user.email },
@@ -11,6 +12,7 @@ export async function getRecentTransactions(userId) {
         ]
     })
         .sort({ createdAt: -1 })
+        .limit(50)
         .select("amount fromEmail toEmail status description createdAt");
 }
 

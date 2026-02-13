@@ -1,7 +1,7 @@
 import User from "../db_models/user.model.js";
 import Transactions from "../db_models/transaction.model.js";
 
-export const sendMoney = async ({ userId, toAccount, amount, description }) => {
+export const sendMoney = async ({ userId, amount, toAccount, description }) => {
     if (!toAccount || !amount || amount <= 0) {
         throw new Error('Invalid input: Amount must be positive.');
     }
