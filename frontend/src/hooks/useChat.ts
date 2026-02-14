@@ -54,14 +54,8 @@ export function useChat() {
 
         const socket = getSocket();
 
-        const userMessage: ChatMessage = { sender: "user", text };
-
-        setMessages(prev => [...prev, userMessage]);
-
-        (socket as any).emit("chatMessage", {
-            message: text,
-            history: messages
-        });
+        setMessages(prev => [...prev, { sender: "user", text }]);
+        socket.emit("chatMessage", text);
     };
 
     return { messages, sendMessage, ready };
