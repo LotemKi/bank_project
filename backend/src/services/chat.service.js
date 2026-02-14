@@ -69,7 +69,11 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                         } else if (isNaN(amount) || amount <= 0) {
                             data = { error: "Invalid amount provided." };
                         } else {
-                            data = await sendMoney(userId, amount, email, call.args.description || "Transfer");
+                            data = await sendMoney({
+                                userId: userId,
+                                amount: amount,
+                                toAccount: email,
+                            });
                         }
                     } catch (serviceError) {
                         console.error("Service Error:", serviceError.message);
