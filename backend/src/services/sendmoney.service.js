@@ -2,7 +2,13 @@ import User from "../db_models/user.model.js";
 import Transactions from "../db_models/transaction.model.js";
 
 export const sendMoney = async ({ userId, amount, toAccount, description }) => {
-    if (!toAccount || !amount || amount <= 0) {
+    if (!toAccount) {
+        throw new Error('Invalid input: Recipient email is required.');
+    }
+    if (!amount) {
+        throw new Error('Invalid input: Amount is required.');
+    }
+    if (amount <= 0) {
         throw new Error('Invalid input: Amount must be positive.');
     }
 

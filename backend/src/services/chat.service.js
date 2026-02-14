@@ -52,8 +52,21 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                 let data;
                 if (call.name === "getBalance") data = await getBalance(userId);
                 if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId);
-                if (call.name === "sendMoney") data = await sendMoney(userId, call.args.amount, call.args.recipientEmail, call.args.description || "Transfer");
-
+                if (call.name === "sendMoney") {
+                    const rawAmount = call.args.amount;
+                    const numericAmount = Number(rawAmount);
+                    numericAmount
+                    if (isNaN(numericAmount) || numericAmount <= 0) {
+                        data = { error: "I couldn't understand the amount. Please provide a positive number." };
+                    } else {
+                        data = await sendMoney(
+                            userId,
+                            numericAmount,
+                            call.args.recipientEmail,
+                            call.args.description || "Transfer"
+                        );
+                    }
+                }
                 functionResponses.push({
                     functionResponse: {
                         name: call.name,
