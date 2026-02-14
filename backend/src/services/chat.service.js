@@ -35,55 +35,42 @@ const tools = [{
 
 export async function handleChatMessage({ userId, message, history = [] }) {
     try {
-        const formattedHistory = history.map(msg => ({
-            role: msg.sender === "user" ? "user" : "model",
-            parts: [{ text: msg.text }],
-        }));
-
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
             tools: tools,
-            systemInstruction: "You are a professional banking assistant in Israel. Be precise and secure. Always double check if you have the recipient's email before calling sendMoney.",
+            systemInstruction: "You are a professional banking assistant in Israel. Be precise and secure.",
         });
 
-        const chat = model.startChat({ history: formattedHistory });
+        const chat = model.startChat({ history });
         let result = await chat.sendMessage(message);
         let response = result.response;
 
-        let callCount = 0;
-        const MAX_CALLS = 5;
-
-        while (response.functionCalls()?.length > 0 && callCount < MAX_CALLS) {
-            callCount++;
+        while (response.functionCalls()?.length > 0) {
             const functionResponses = [];
 
             for (const call of response.functionCalls()) {
                 console.log(`[AGENT ACTION]: Calling ${call.name}`);
-                let data;
 
-                if (call.name === "getBalance") {
-                    data = await getBalance(userId);
-                }
-                else if (call.name === "getRecentTransactions") {
-                    data = await getRecentTransactions(userId);
-                }
-                else if (call.name === "sendMoney") {
-                    const email = call.args.recipientEmail || call.args.email || call.args.recipient;
+                let data;
+                if (call.name === "getBalance") data = await getBalance(userId);
+                if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId);
+                if (call.name === "sendMoney") {
+                    const email = call.args.recipientEmail || call.args.email || call.args.recipient || call.args.recipientName;
                     const amount = Number(call.args.amount);
 
                     try {
                         if (!email) {
-                            data = { error: "Recipient email is missing. Please ask the user for it." };
+                            data = { error: "Recipient email is missing." };
                         } else if (isNaN(amount) || amount <= 0) {
-                            data = { error: "Invalid amount. Must be a positive number." };
+                            data = { error: "Invalid amount provided." };
                         } else {
                             data = await sendMoney(userId, amount, email, call.args.description || "Transfer");
                         }
                     } catch (serviceError) {
+                        console.error("Service Error:", serviceError.message);
                         data = { error: serviceError.message };
                     }
                 }
-
                 functionResponses.push({
                     functionResponse: {
                         name: call.name,
@@ -103,14 +90,7 @@ export async function handleChatMessage({ userId, message, history = [] }) {
 
     } catch (error) {
         console.error("CRITICAL CHAT ERROR:", error.message);
-
-        const errorMessage = error.message.includes("429")
-            ? "System busy. Please wait a minute."
-            : "I'm having trouble connecting to the vault. Try again in a moment.";
-
-        return {
-            text: errorMessage,
-            newHistory: history
-        };
+        if (error.message.includes("429")) return { text: "System busy. Please wait a few minutes." };
+        return { text: "The Agent encountered an error. Please try again." };
     }
 }
