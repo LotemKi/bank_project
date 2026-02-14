@@ -1,5 +1,6 @@
 import User from "../db_models/user.model.js";
 import Transactions from "../db_models/transaction.model.js";
+import { getNextId } from "./counter.service.js";
 
 export const sendMoney = async ({ userId, amount, toAccount, description }) => {
     if (!toAccount) {
