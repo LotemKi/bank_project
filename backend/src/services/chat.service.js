@@ -18,12 +18,12 @@ const tools = [{
         },
         {
             name: "sendMoney",
-            description: "Transfer money to another contact",
+            description: "Transfer money to another person using their email address.",
             parameters: {
                 type: "OBJECT",
                 properties: {
-                    amount: { type: "NUMBER", description: "The amount in ILS" },
-                    recipientEmail: { type: "STRING", description: "The email of the recipient" }
+                    amount: { type: "NUMBER", description: "The amount of ILS to send." },
+                    recipientEmail: { type: "STRING", description: "The EXACT email address of the recipient (e.g., user@gmail.com)." }
                 },
                 required: ["amount", "recipientEmail"]
             }
@@ -53,18 +53,15 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                 if (call.name === "getBalance") data = await getBalance(userId);
                 if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId);
                 if (call.name === "sendMoney") {
-                    const rawAmount = call.args.amount;
-                    const numericAmount = Number(rawAmount);
-                    numericAmount
-                    if (isNaN(numericAmount) || numericAmount <= 0) {
-                        data = { error: "I couldn't understand the amount. Please provide a positive number." };
+                    const recipient = call.args.recipientEmail || call.args.recipient || call.args.recipientName;
+                    const amount = Number(call.args.amount);
+
+                    if (!recipient) {
+                        data = { error: "I need an email address to send the money to. Who is the recipient?" };
+                    } else if (isNaN(amount) || amount <= 0) {
+                        data = { error: "Please provide a valid amount to send." };
                     } else {
-                        data = await sendMoney(
-                            userId,
-                            numericAmount,
-                            call.args.recipientEmail,
-                            call.args.description || "Transfer"
-                        );
+                        data = await sendMoney(userId, amount, recipient, call.args.description || "Transfer");
                     }
                 }
                 functionResponses.push({
