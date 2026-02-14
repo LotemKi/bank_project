@@ -53,15 +53,22 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                 if (call.name === "getBalance") data = await getBalance(userId);
                 if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId);
                 if (call.name === "sendMoney") {
-                    const recipient = call.args.recipientEmail || call.args.recipient || call.args.recipientName;
+                    const email = call.args.recipientEmail || call.args.email || call.args.recipient || call.args.recipientName;
                     const amount = Number(call.args.amount);
 
-                    if (!recipient) {
-                        data = { error: "I need an email address to send the money to. Who is the recipient?" };
-                    } else if (isNaN(amount) || amount <= 0) {
-                        data = { error: "Please provide a valid amount to send." };
-                    } else {
-                        data = await sendMoney(userId, amount, recipient, call.args.description || "Transfer");
+                    try {
+                        if (!email) {
+                            data = { error: "Recipient email is missing." };
+                        } else if (isNaN(amount) || amount <= 0) {
+                            data = { error: "Invalid amount provided." };
+                        } else {
+                            // 2. Call the service but CATCH its internal errors
+                            data = await sendMoney(userId, amount, email, call.args.description || "Transfer");
+                        }
+                    } catch (serviceError) {
+                        // 3. Instead of crashing the whole app, send the error back to Gemini
+                        console.error("Service Error:", serviceError.message);
+                        data = { error: serviceError.message };
                     }
                 }
                 functionResponses.push({
