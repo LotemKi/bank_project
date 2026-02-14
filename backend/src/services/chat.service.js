@@ -62,11 +62,9 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                         } else if (isNaN(amount) || amount <= 0) {
                             data = { error: "Invalid amount provided." };
                         } else {
-                            // 2. Call the service but CATCH its internal errors
                             data = await sendMoney(userId, amount, email, call.args.description || "Transfer");
                         }
                     } catch (serviceError) {
-                        // 3. Instead of crashing the whole app, send the error back to Gemini
                         console.error("Service Error:", serviceError.message);
                         data = { error: serviceError.message };
                     }

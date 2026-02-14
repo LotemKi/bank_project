@@ -39,14 +39,14 @@ export function useChat() {
     }, []);
 
     useEffect(() => {
-        const savedMessages = localStorage.getItem("chat_history");
+        const savedMessages = sessionStorage.getItem("chat_history");
         if (savedMessages) {
             setMessages(JSON.parse(savedMessages));
         }
     }, []);
 
     useEffect(() => {
-        localStorage.setItem("chat_history", JSON.stringify(messages));
+        sessionStorage.setItem("chat_history", JSON.stringify(messages));
     }, [messages]);
 
     const sendMessage = (text: string) => {
