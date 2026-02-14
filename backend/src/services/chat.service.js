@@ -19,15 +19,20 @@ const tools = [{
 
         {
             name: "sendMoney",
-            description: "Transfer money. Requires 'amount' (number) and 'recipientEmail' (string email).",
+            description: "Transfer money to a recipient's email.",
             parameters: {
                 type: "OBJECT",
                 properties: {
-                    amount: { type: "NUMBER" },
-                    recipientEmail: { type: "STRING", description: "The email of the person receiving money." },
-                    recipient: { type: "STRING", description: "Alternative field for the email." }
+                    amount: {
+                        type: "NUMBER",
+                        description: "The numerical amount to send (e.g., 50)."
+                    },
+                    recipientEmail: {
+                        type: "STRING",
+                        description: "The full email address (e.g., user@example.com)."
+                    }
                 },
-                required: ["amount"]
+                required: ["amount", "recipientEmail"]
             }
         }
     ]
@@ -38,7 +43,7 @@ export async function handleChatMessage({ userId, message, history = [] }) {
         const model = genAI.getGenerativeModel({
             model: "gemini-2.5-flash",
             tools: tools,
-            systemInstruction: "You are a professional banking assistant in Israel. Be precise and secure.",
+            systemInstruction: "You are a professional banking assistant. To send money, you MUST have both the 'amount' and the 'recipientEmail'. If a user provides only one, do NOT call the tool. Instead, ask for the missing piece. Once you have both, call 'sendMoney'. Example: If user says 'send 50', reply 'Who should I send 50 ILS to? Please provide their email.'",
         });
 
         const chat = model.startChat({ history });
