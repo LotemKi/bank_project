@@ -30,6 +30,10 @@ const tools = [{
                     recipientEmail: {
                         type: "STRING",
                         description: "The full email address (e.g., user@example.com)."
+                    },
+                    transferDescription: {
+                        type: "STRING",
+                        description: "A short note for the transfer (e.g., 'Dinner' or 'Rent')."
                     }
                 },
                 required: ["amount", "recipientEmail"]
@@ -73,6 +77,7 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                                 userId: userId,
                                 amount: amount,
                                 toAccount: email,
+                                description: call.args.transferDescription || call.args.description || "No description"
                             });
                         }
                     } catch (serviceError) {
