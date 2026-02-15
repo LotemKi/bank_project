@@ -28,7 +28,7 @@ const Dashboard = () => {
       }
     };
     fetchTx();
-  }, [profile, navigate]);
+  }, [profile, balance, transactions, navigate]);
 
   if (loading) return <p>Loading...</p>;
 
