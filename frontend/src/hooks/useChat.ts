@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSocket } from "../sockets/chat";
+import { useAuth } from "./useAuth";
 
 interface ChatMessage {
     sender: "user" | "bot";
@@ -9,6 +10,7 @@ interface ChatMessage {
 export function useChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [ready, setReady] = useState(false);
+    const { refreshProfile } = useAuth();
 
     useEffect(() => {
         let socket;
@@ -20,7 +22,7 @@ export function useChat() {
             return;
         }
 
-        const onBotMessage = (incoming: any) => {
+        const onBotMessage = async (incoming: any) => {
             const textToDisplay = typeof incoming === "string"
                 ? incoming
                 : (incoming?.text || "⚠️ The AI is currently unavailable.");
@@ -29,6 +31,11 @@ export function useChat() {
                 sender: "bot",
                 text: textToDisplay
             }]);
+
+            if (incoming?.functionResponse?.name === "sendMoney" &&
+                incoming?.functionResponse?.response?.content?.success) {
+                await refreshProfile();
+            }
         };
 
         socket.on("botMessage", onBotMessage);
