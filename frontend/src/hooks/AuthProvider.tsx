@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         refreshProfile();
-    }, []);
+    }, [balance]);
 
 
     useEffect(() => {

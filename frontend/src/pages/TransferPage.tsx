@@ -5,13 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { theme } from "../theme/theme";
 import { apiPrivate } from "../api/apiPrivate";
 import { Navbar } from "../components";
-import { useAuth } from "../hooks/useAuth"; // Added to fetch balance
+import { useAuth } from "../hooks/useAuth";
 import { ArrowBack, CheckCircleOutline, InfoOutlined, Security, Send, Shield } from "@mui/icons-material";
 import { ChatPanel } from "../components/ChatPanel";
 
 const TransferPage = () => {
   const navigate = useNavigate();
-  const { balance } = useAuth(); // Get balance from Auth context
+  const { refreshProfile, balance } = useAuth();
 
   // Form fields
   const [recipient, setRecipient] = useState("");
@@ -57,6 +57,7 @@ const TransferPage = () => {
           date: new Date(res.data.data.timestamp).toISOString().slice(0, 16).replace("T", " "),
         });
         setRecipient(""); setAmount(""); setDescription("");
+        await refreshProfile();
       } else {
         showError(res.data?.error || "Transfer Authorization Failed");
       }
