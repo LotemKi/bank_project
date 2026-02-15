@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { UserProfile } from "../types/userTransactionTypes";
 import { apiPrivate } from "../api/apiPrivate";
 import Cookies from "js-cookie";
@@ -32,13 +32,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         } finally {
             setLoading(false);
-
         }
     };
 
+    const value = useMemo(() => ({
+        profile,
+        balance,
+        loading,
+        refreshProfile,
+        setProfile
+    }), [profile, balance, loading, refreshProfile, setProfile]);
+
     useEffect(() => {
         refreshProfile();
-    }, [balance]);
+    }, []);
 
 
     useEffect(() => {
@@ -48,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [profile?.id]);
 
     return (
-        <AuthContext.Provider value={{ profile, balance, loading, refreshProfile, setProfile }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
