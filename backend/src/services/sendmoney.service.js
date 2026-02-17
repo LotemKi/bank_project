@@ -38,7 +38,7 @@ export const sendMoney = async ({ userId, amount, toAccount, description }) => {
         // 3. Record transaction
         const nextId = await getNextId('transactions');
         const tx = await Transactions.create({
-            id: nextId, fromEmail, toEmail: toAccount, amount, description, status: 'COMPLETED'
+            id: nextId, fromEmail, toEmail: toAccount, amount, status: 'COMPLETED', description
         });
 
         return {
