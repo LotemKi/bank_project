@@ -46,6 +46,17 @@ const Login = () => {
       await refreshProfile();
       navigate("/dashboard");
     }
+    else {
+      if (res.data === "INVALID_CREDENTIALS") {
+        alert("Invalid email or password. Please try again.");
+      }
+      else if (res.data === "SERVER_ERROR") {
+        alert("Server error occurred. Please try again later.");
+      }
+      else {
+        alert("Network error. Please check your connection and try again.");
+      }
+    }
   };
 
   return (

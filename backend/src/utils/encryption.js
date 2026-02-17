@@ -1,8 +1,14 @@
 import crypto from 'crypto';
 
 const ALGO = 'aes-256-gcm';
-const KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'hex'); // must be 32 bytes (64 hex chars)
 const IV_LENGTH = 12; // recommended for GCM
+
+function getKey() {
+    if (!process.env.ENCRYPTION_KEY) {
+        throw new Error("ENCRYPTION_KEY not defined");
+    }
+    return Buffer.from(process.env.ENCRYPTION_KEY, "hex");
+}
 
 /**
  * Encrypt a string
@@ -10,6 +16,7 @@ const IV_LENGTH = 12; // recommended for GCM
  * @returns {string} - base64 encoded token
  */
 function encrypt(text) {
+    const KEY = getKey();
     const iv = crypto.randomBytes(IV_LENGTH);
     const cipher = crypto.createCipheriv(ALGO, KEY, iv);
 
@@ -27,6 +34,7 @@ function encrypt(text) {
  * @returns {string} - decrypted plaintext
  */
 function decrypt(token) {
+    const KEY = getKey();
     const buffer = Buffer.from(token, 'base64');
 
     const iv = buffer.subarray(0, IV_LENGTH);
