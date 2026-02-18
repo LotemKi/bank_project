@@ -36,7 +36,7 @@ const tools = [{
                         description: "A short note for the transfer (e.g., 'Dinner' or 'Rent')."
                     }
                 },
-                required: ["amount", "recipientEmail", "transferDescription"]
+                required: ["amount", "recipientEmail"]
             }
         }
     ]
