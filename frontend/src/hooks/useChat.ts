@@ -23,18 +23,30 @@ export function useChat() {
         }
 
         const onBotMessage = async (incoming: any) => {
-            const textToDisplay = typeof incoming === "string"
-                ? incoming
-                : (incoming?.text || "⚠️ The AI is currently unavailable.");
+            // Normalize incoming message shapes from server
+            // Supported shapes:
+            // - string
+            // - { text: '...'}
+            // - { content: '...' } or { content: { text: '...'} }
+            // - model responses with updatedBalance
+            let textToDisplay = "⚠️ The AI is currently unavailable.";
 
-            setMessages(prev => [...prev, {
-                sender: "bot",
-                text: textToDisplay
-            }]);
+            if (typeof incoming === "string") {
+                textToDisplay = incoming;
+            } else if (incoming?.text) {
+                textToDisplay = incoming.text;
+            } else if (incoming?.content) {
+                if (typeof incoming.content === "string") textToDisplay = incoming.content;
+                else if (incoming.content?.text) textToDisplay = incoming.content.text;
+            } else if (incoming?.message) {
+                textToDisplay = incoming.message;
+            }
 
-            if (incoming?.functionResponse?.name === "sendMoney" &&
-                incoming?.functionResponse?.response?.content?.success) {
-                await refreshProfile();
+            setMessages(prev => [...prev, { sender: "bot", text: textToDisplay }]);
+
+            // If server included updatedBalance in the payload, refresh profile
+            if (typeof incoming?.updatedBalance === "number") {
+                try { await refreshProfile(); } catch (e) { }
             }
         };
 

@@ -5,9 +5,15 @@ export function registerChatSocket(io) {
 
         socket.userId = socket.handshake.auth.userId;
 
+        // join a room per-userId so server can emit updates to all tabs/devices
+        if (socket.userId) {
+            socket.join(socket.userId);
+        }
+
+        // send an initial greeting with `text` so clients display it correctly
         socket.emit("botMessage", {
-            role: "bot",
-            content: "Hello. How can I help you today?"
+            text: "Hello. How can I help you today?",
+            role: "bot"
         });
 
         socket.on("chatMessage", async (message) => {
