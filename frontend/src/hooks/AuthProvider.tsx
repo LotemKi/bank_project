@@ -53,12 +53,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const socket = initSocket(profile.id);
 
-        socket.on("balance:update", (updatedBalance: number) => {
+        const handleBalance = (updatedBalance: number) => {
+            console.log("Received balance update:", updatedBalance);
             setBalance(updatedBalance);
-        });
+        };
+
+        socket.on("balance:update", handleBalance);
 
         return () => {
-            socket.off("balance:update");
+            socket.off("balance:update", handleBalance);
         };
     }, [profile?.id]);
 

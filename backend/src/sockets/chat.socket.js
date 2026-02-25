@@ -22,7 +22,6 @@ export function registerChatSocket(io) {
 
             if (typeof response.updatedBalance === "number") {
                 io.to(socket.userId).emit("balance:update", response.updatedBalance);
-                console.log(`[SOCKET EMIT]: Sent balance update to user ${socket.userId}: ${response.updatedBalance} ILS`);
             }
 
             socket.emit("botMessage", response);

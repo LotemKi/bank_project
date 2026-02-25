@@ -59,8 +59,6 @@ export async function handleChatMessage({ userId, message, history = [] }) {
             const functionResponses = [];
 
             for (const call of response.functionCalls()) {
-                console.log(`[AGENT ACTION]: Calling ${call.name}`);
-
                 let data;
                 if (call.name === "getBalance") data = await getBalance(userId);
                 if (call.name === "getRecentTransactions") data = await getRecentTransactions(userId);
@@ -83,7 +81,6 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                         }
                         if (typeof data?.newBalance === "number") {
                             updatedBalance = data.newBalance;
-                            console.log(`[AGENT ACTION]: Updated balance after sendMoney: ${updatedBalance} ILS`);
                         }
                     } catch (serviceError) {
                         console.error("Service Error:", serviceError.message);
