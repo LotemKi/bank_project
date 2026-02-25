@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSocket } from "../sockets/chat";
-import { useAuth } from "./useAuth";
+import { useAuthContext } from "./AuthProvider";
 
 interface ChatMessage {
     sender: "user" | "bot";
@@ -10,7 +10,7 @@ interface ChatMessage {
 export function useChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [ready, setReady] = useState(false);
-    const { refreshProfile } = useAuth();
+    const { setBalance } = useAuthContext();
 
     useEffect(() => {
         let socket;
@@ -23,12 +23,6 @@ export function useChat() {
         }
 
         const onBotMessage = async (incoming: any) => {
-            // Normalize incoming message shapes from server
-            // Supported shapes:
-            // - string
-            // - { text: '...'}
-            // - { content: '...' } or { content: { text: '...'} }
-            // - model responses with updatedBalance
             let textToDisplay = "⚠️ The AI is currently unavailable.";
 
             if (typeof incoming === "string") {
@@ -44,9 +38,8 @@ export function useChat() {
 
             setMessages(prev => [...prev, { sender: "bot", text: textToDisplay }]);
 
-            // If server included updatedBalance in the payload, refresh profile
             if (typeof incoming?.updatedBalance === "number") {
-                try { await refreshProfile(); } catch (e) { }
+                setBalance(incoming.updatedBalance);
             }
         };
 

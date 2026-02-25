@@ -10,6 +10,7 @@ type AuthContextType = {
     loading: boolean;
     refreshProfile: () => Promise<void>;
     setProfile: (p: UserProfile | null) => void;
+    setBalance: (b: number | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,7 +41,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         balance,
         loading,
         refreshProfile,
-        setProfile
+        setProfile,
+        setBalance
     }), [profile, balance, loading, refreshProfile, setProfile]);
 
     useEffect(() => {
