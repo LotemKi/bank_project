@@ -81,7 +81,7 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                                 description: call.args.transferDescription || call.args.description || "No description"
                             });
                         }
-                        if (typeof data?.newBalance === "Number") {
+                        if (typeof data?.newBalance === "number") {
                             updatedBalance = data.newBalance;
                         }
                     } catch (serviceError) {
