@@ -49,9 +49,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
     useEffect(() => {
-        if (profile?.id) {
-            initSocket(profile.id);
-        }
+        if (!profile?.id) return;
+
+        const socket = initSocket(profile.id);
+
+        socket.on("balance:update", (updatedBalance: number) => {
+            setBalance(updatedBalance);
+        });
+
+        return () => {
+            socket.off("balance:update");
+        };
     }, [profile?.id]);
 
     return (

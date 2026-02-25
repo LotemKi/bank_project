@@ -5,7 +5,7 @@ export function registerChatSocket(io) {
 
         socket.userId = socket.handshake.auth.userId;
 
-        socket.emit("agent_message", {
+        socket.emit("botMessage", {
             role: "bot",
             content: "Hello. How can I help you today?"
         });
@@ -19,6 +19,8 @@ export function registerChatSocket(io) {
                 userId: socket.userId,
                 message
             });
+
+            io.to(socket.userId).emit("balance:update", response.updatedBalance);
 
             socket.emit("botMessage", response);
         });

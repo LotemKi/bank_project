@@ -2,6 +2,7 @@ import { io, Socket } from "socket.io-client";
 
 export interface ServerToClientEvents {
     botMessage: (message: string) => void;
+    "balance:update": (updatedBalance: number) => void;
 }
 
 export interface ClientToServerEvents {

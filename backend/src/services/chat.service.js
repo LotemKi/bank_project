@@ -53,6 +53,7 @@ export async function handleChatMessage({ userId, message, history = [] }) {
         const chat = model.startChat({ history });
         let result = await chat.sendMessage(message);
         let response = result.response;
+        let updatedBalance = null;
 
         while (response.functionCalls()?.length > 0) {
             const functionResponses = [];
@@ -80,6 +81,9 @@ export async function handleChatMessage({ userId, message, history = [] }) {
                                 description: call.args.transferDescription || call.args.description || "No description"
                             });
                         }
+                        if (typeof data?.newBalance === "Number") {
+                            updatedBalance = data.newBalance;
+                        }
                     } catch (serviceError) {
                         console.error("Service Error:", serviceError.message);
                         data = { error: serviceError.message };
@@ -99,7 +103,8 @@ export async function handleChatMessage({ userId, message, history = [] }) {
 
         return {
             text: response.text(),
-            newHistory: await chat.getHistory()
+            newHistory: await chat.getHistory(),
+            updatedBalance: updatedBalance
         };
 
     } catch (error) {
