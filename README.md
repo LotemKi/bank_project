@@ -8,6 +8,14 @@
 
 Live (demo/staging): https://lokbank.vercel.app :contentReference[oaicite:0]{index=0}
 
+## Demo
+
+### AI Agent Interaction
+<img src="https://raw.githubusercontent.com/LotemKi/LotemKi/main/bank_demo_aiagent.gif" width="900"/>
+
+### Transactions & Account Management
+<img src="https://raw.githubusercontent.com/LotemKi/LotemKi/main/bank_demo_transactions.gif" width="900"/>
+
 ## Architecture
 
 ### Modules
