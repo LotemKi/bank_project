@@ -1,9 +1,9 @@
 import { signToken } from '../utils/jwt.js';
 import { v4 as uuid } from 'uuid';
-import User from '../db_models/user.model.js';
 import { sendVerificationMail } from '../mailer/auth.mailer.js';
 import bcrypt from 'bcryptjs';
 import { decrypt } from '../utils/encryption.js';
+import { userRepository } from '../repositories/index.js';
 
 /* ========================= SIGNUP ========================= */
 
@@ -15,7 +15,7 @@ const signup = async (req, res) => {
   }
 
   // Check if user already exists
-  const existingUser = await User.findOne({ email });
+  const existingUser = await userRepository.findByEmail(email);
   if (existingUser) {
     return res.status(409).json({ error: 'User exists' });
   }
@@ -25,7 +25,7 @@ const signup = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   // Create new user
-  const user = await User.create({
+  const user = await userRepository.createUser({
     id: uuid(),
     firstName,
     lastName,
@@ -43,7 +43,7 @@ const signup = async (req, res) => {
     console.error('Failed to send verification email:', err);
 
     // Rollback user in DB
-    await User.deleteOne({ id: user.id });
+    await userRepository.deleteById(user.id);
 
     return res.status(500).json({
       success: false,
@@ -86,7 +86,7 @@ const verify = async (req, res) => {
     });
   }
 
-  const user = await User.findOne({ id: userId });
+  const user = await userRepository.findById(userId);
   if (!user) {
     return res.status(404).json({
       success: false,
@@ -111,8 +111,7 @@ const verify = async (req, res) => {
     });
   }
 
-  user.verificationStatus = 'ACTIVE';
-  await user.save();
+  await userRepository.updateVerificationStatus(user.id, 'ACTIVE');
 
   return res.json({
     success: true,
@@ -129,7 +128,7 @@ const verify = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email }).select('+password');
+  const user = await userRepository.findByEmailWithPassword(email);
   if (!user) return res.status(401).json({ error: 'User name is not found' });
   if (user.verificationStatus !== 'ACTIVE') return res.status(403).json({ error: 'User not verified' });
 
@@ -167,7 +166,7 @@ const logout = async (req, res) => {
 /* ========================= ME ========================= */
 
 const me = async (req, res) => {
-  const user = await User.findOne({ id: req.user.id }).lean();
+  const user = await userRepository.findById(req.user.id);
 
   if (!user) {
     return res.status(404).json({ success: false, error: "User not found" });

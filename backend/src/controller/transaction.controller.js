@@ -1,6 +1,4 @@
-import Transactions from '../db_models/transaction.model.js';
-import User from '../db_models/user.model.js';
-import { getNextId } from '../services/counter.service.js';
+import { userRepository, transactionRepository } from '../repositories/index.js';
 
 /* ========================= GET ALL TRANSACTIONS ========================= */
 
@@ -9,19 +7,11 @@ export const getTransactions = async (req, res) => {
   const offset = Number(req.query.offset) || 0;
   const limit = Number(req.query.limit) || 500;
 
-  // Find transactions involving this user
-  const [transactions, total] = await Promise.all([
-    Transactions.find({
-      $or: [{ fromEmail: userEmail }, { toEmail: userEmail }]
-    })
-      .sort({ createdAt: -1 })
-      .skip(offset)
-      .limit(limit)
-      .lean(),
-    Transactions.countDocuments({
-      $or: [{ fromEmail: userEmail }, { toEmail: userEmail }]
-    })
-  ]);
+  // Find transactions involving this user via repository
+  const { transactions, total } = await transactionRepository.getByUserEmail(userEmail, {
+    offset,
+    limit
+  });
 
   res.json({
     success: true,
@@ -45,31 +35,22 @@ export const createTransaction = async (req, res) => {
   }
 
   // 1. Debit sender atomically
-  const debitResult = await User.updateOne(
-    { email: fromEmail, balance: { $gte: amount } },
-    { $inc: { balance: -amount } } // <- negative for sender
-  );
+  const debitSuccess = await userRepository.debitIfSufficient(fromEmail, amount);
 
-  if (debitResult.modifiedCount !== 1) {
+  if (!debitSuccess) {
     return res.status(400).json({ success: false, error: 'Insufficient funds' });
   }
 
   try {
     // 2. Credit receiver
-    const creditResult = await User.updateOne(
-      { email: toAccount },
-      { $inc: { balance: amount } }
-    );
+    const creditSuccess = await userRepository.incrementBalance(toAccount, amount);
 
-    if (creditResult.modifiedCount !== 1) {
+    if (!creditSuccess) {
       throw new Error('Receiver not found');
     }
 
     // 3. Create transaction record
-    const nextId = await getNextId('transactions');
-
-    const tx = await Transactions.create({
-      id: nextId,
+    const tx = await transactionRepository.createTransaction({
       fromEmail,
       toEmail: toAccount,
       amount: amount, // always positive in record
@@ -89,10 +70,7 @@ export const createTransaction = async (req, res) => {
 
   } catch (err) {
     // Rollback sender balance if credit or record creation fails
-    await User.updateOne(
-      { email: fromEmail },
-      { $inc: { balance: amount } }
-    );
+    await userRepository.incrementBalance(fromEmail, amount);
 
     return res.status(500).json({
       success: false,
@@ -108,7 +86,7 @@ export const getTransactionById = async (req, res) => {
   const userEmail = req.user.email;
 
   // Find the transaction
-  const transaction_found = await Transactions.findOne({ id: transactionId }).lean();
+  const transaction_found = await transactionRepository.findById(transactionId);
 
   if (!transaction_found) {
     return res.status(404).json({
