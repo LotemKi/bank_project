@@ -2,7 +2,7 @@ import 'dotenv/config';
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './app.js';
-import connectDB from './services/db.service.js';
+import connectDB from './services/mongodb.service.js';
 import { registerChatSocket } from "./sockets/chat.socket.js";
 
 const PORT = process.env.PORT || 5000;
