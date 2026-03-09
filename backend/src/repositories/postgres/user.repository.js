@@ -1,4 +1,4 @@
-import pool from '../../db/postgres.js';
+import pool from '../../services/postgresdb.service.js';
 
 const mapUserRow = (row) => {
     if (!row) return null;
