@@ -8,6 +8,7 @@ import type { Transaction } from "../types/userTransactionTypes";
 import { useAuth } from "../hooks/useAuth";
 import { BalanceCard, TransactionsTable, Navbar } from "../components";
 import { ChatPanel } from "../components/ChatPanel";
+import { VideoCall } from "@mui/icons-material";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -144,6 +145,7 @@ const Dashboard = () => {
         </Container>
       </Box>
       <ChatPanel />
+      <VideoCall />
     </Box>
   );
 }
