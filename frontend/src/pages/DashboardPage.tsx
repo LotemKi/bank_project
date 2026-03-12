@@ -100,8 +100,8 @@ const Dashboard = () => {
               border: `2px solid ${theme.palette.primary.main}`,
               display: "flex",
               flexDirection: "column",
-              flex: 1,// Takes 70% of the vertical space
-              minHeight: 0, // Forces card to stay within the green section
+              flex: 1,
+              minHeight: 0,
               overflow: "hidden",
               bgcolor: theme.palette.background.paper
             }}
@@ -126,7 +126,7 @@ const Dashboard = () => {
             <Box sx={{
               flex: 1,
               minHeight: 0,
-              overflow: "hidden", // We let the TableContainer inside do the scrolling
+              overflow: "hidden",
               px: 1,
               pb: 1
             }}>
@@ -147,27 +147,21 @@ const Dashboard = () => {
         </Container>
       </Box>
 
-      <Box sx={{ position: 'relative', minHeight: '100vh' }}>
-
-        <ChatPanel />
-
-        <Fab
-          color="primary"
-          onClick={() => setVideoOpen(true)}
-          sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}
-          aria-label="video call"
-        >
+      <Box sx={{ position: "fixed", bottom: 30, right: 30, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Fab color="primary" onClick={() => setVideoOpen(true)} aria-label="video call">
           <VideoCallIcon />
         </Fab>
 
-        <VideoCall
-          open={videoOpen}
-          onClose={() => setVideoOpen(false)}
-          displayName="Customer"
-        />
-
+        <Fab color="secondary" aria-label="chat">
+          <ChatPanel />
+        </Fab>
       </Box>
-    </Box>
+      <VideoCall
+        open={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        displayName="Customer"
+      />
+    </Box >
   );
 }
 
