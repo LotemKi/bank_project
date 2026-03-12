@@ -23,7 +23,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ open, onClose, displayName }) => 
 
         const domain = "meet.jit.si";
         const options = {
-            roomName: `LOK-Bank-Support-${displayName.replace(/\s/g, "-")}`,
+            roomName: `LOK-bank-video-assistant-session-${Date.now()}`,
             parentNode: jitsiContainerRef.current,
             width: "100%",
             height: 450,
@@ -35,7 +35,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ open, onClose, displayName }) => 
             },
             interfaceConfigOverwrite: {
                 TILE_VIEW_MAX_COLUMNS: 2,
-                // Hide features that feel "un-bank-like"
                 TOOLBAR_BUTTONS: ['microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen', 'hangup', 'chat', 'settings'],
             },
             userInfo: { displayName },
@@ -43,7 +42,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ open, onClose, displayName }) => 
 
         apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
 
-        // --- ADDED: Close modal when user hangs up inside Jitsi ---
         apiRef.current.addEventListeners({
             readyToClose: () => {
                 onClose();
@@ -57,7 +55,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ open, onClose, displayName }) => 
     useEffect(() => {
         if (!open) return;
 
-        // Check if script already exists in the document
         const existingScript = document.getElementById('jitsi-script');
 
         if (!window.JitsiMeetExternalAPI) {
@@ -70,7 +67,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ open, onClose, displayName }) => 
                 document.body.appendChild(script);
             }
         } else {
-            // Wait for DOM to catch up so ref is available
             setTimeout(initJitsi, 100);
         }
 

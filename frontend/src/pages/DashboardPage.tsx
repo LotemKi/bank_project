@@ -8,12 +8,13 @@ import type { Transaction } from "../types/userTransactionTypes";
 import { useAuth } from "../hooks/useAuth";
 import { BalanceCard, TransactionsTable, Navbar } from "../components";
 import { ChatPanel } from "../components/ChatPanel";
-import { VideoCall } from "@mui/icons-material";
+import VideoCall from "../components/VideoCall";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { profile, balance, loading } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -144,8 +145,18 @@ const Dashboard = () => {
           </Box>
         </Container>
       </Box>
+      <Button
+        variant="contained"
+        onClick={() => setVideoOpen(true)}
+      >
+        Contact Video Support
+      </Button>
       <ChatPanel />
-      <VideoCall />
+      <VideoCall
+        open={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        displayName="Customer"
+      />
     </Box>
   );
 }
