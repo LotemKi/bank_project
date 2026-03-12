@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Typography, Card, Button, alpha, Container } from "@mui/material";
+import { Box, Fab, Typography, Card, Button, alpha, Container } from "@mui/material";
 import { ReceiptLong, History } from "@mui/icons-material";
 import { theme } from "../theme/theme";
 import { apiPrivate } from "../api/apiPrivate";
@@ -9,6 +9,7 @@ import { useAuth } from "../hooks/useAuth";
 import { BalanceCard, TransactionsTable, Navbar } from "../components";
 import { ChatPanel } from "../components/ChatPanel";
 import VideoCall from "../components/VideoCall";
+import VideoCallIcon from '@mui/icons-material/VideoCall';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -145,20 +146,30 @@ const Dashboard = () => {
           </Box>
         </Container>
       </Box>
-      <Button
-        variant="contained"
-        onClick={() => setVideoOpen(true)}
-      >
-        Contact Video Support
-      </Button>
-      <ChatPanel />
-      <VideoCall
-        open={videoOpen}
-        onClose={() => setVideoOpen(false)}
-        displayName="Customer"
-      />
+
+      <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+
+        <ChatPanel />
+
+        <Fab
+          color="primary"
+          onClick={() => setVideoOpen(true)}
+          sx={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}
+          aria-label="video call"
+        >
+          <VideoCallIcon />
+        </Fab>
+
+        <VideoCall
+          open={videoOpen}
+          onClose={() => setVideoOpen(false)}
+          displayName="Customer"
+        />
+
+      </Box>
     </Box>
   );
 }
+
 
 export default Dashboard;
