@@ -91,11 +91,11 @@ const VideoCall: React.FC<VideoCallProps> = ({ open, onClose, displayName }) => 
             fullWidth
             slotProps={{
                 paper: {
-                    sx: { borderRadius: 3, overflow: 'hidden', height: '80vh' }
+                    sx: { borderRadius: 3, overflow: 'hidden' }
                 }
             }}
         >
-            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 'calc(100% - 64px)', bgcolor: 'primary.main', color: 'white' }}>
+            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: 'primary.main', color: 'white' }}>
                 <Typography variant="h6" fontWeight={700}>Secure Vault Video Support</Typography>
                 <IconButton onClick={onClose} sx={{ color: 'white' }}>
                     <Close />
