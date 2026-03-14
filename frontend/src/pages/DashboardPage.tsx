@@ -147,8 +147,8 @@ const Dashboard = () => {
         </Container>
       </Box>
 
-      <Box sx={{ position: "fixed", bottom: 30, right: 30, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <Fab color="primary" onClick={() => setVideoOpen(true)} aria-label="video call">
+      <Box sx={{ position: "primaryfixed", bottom: 30, right: 30, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <Fab color="secondary" onClick={() => setVideoOpen(true)} aria-label="video call">
           <VideoCallIcon />
         </Fab>
 

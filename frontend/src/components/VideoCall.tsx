@@ -95,7 +95,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ open, onClose, displayName }) => 
                 }
             }}
         >
-            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: 'primary.main', color: 'white' }}>
+            <DialogTitle sx={{ m: 0, p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: 'primary.main', color: 'secondary.main' }}>
                 <Typography variant="h6" fontWeight={700}>Secure Vault Video Support</Typography>
                 <IconButton onClick={onClose} sx={{ color: 'white' }}>
                     <Close />
