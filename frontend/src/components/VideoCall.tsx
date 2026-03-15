@@ -100,7 +100,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                     aria-label="video support"
                     onClick={() => setOpen(true)}
                 >
-                    <VideoCallIcon sx={{ fontSize: 24, color: "secondary.main", width: 32, height: 32 }} />
+                    <VideoCallIcon sx={{ fontSize: 24, color: "secondary.main", width: 24, height: 24 }} />
                 </Fab>
             </Box>
 
