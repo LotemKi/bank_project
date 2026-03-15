@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Box, Fab, Typography, Card, Button, alpha, Container } from "@mui/material";
+import { Box, Typography, Card, Button, alpha, Container } from "@mui/material";
 import { ReceiptLong, History } from "@mui/icons-material";
 import { theme } from "../theme/theme";
 import { apiPrivate } from "../api/apiPrivate";
@@ -9,13 +9,11 @@ import { useAuth } from "../hooks/useAuth";
 import { BalanceCard, TransactionsTable, Navbar } from "../components";
 import { ChatPanel } from "../components/ChatPanel";
 import VideoCall from "../components/VideoCall";
-import VideoCallIcon from '@mui/icons-material/VideoCall';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { profile, balance, loading } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -122,7 +120,20 @@ const Dashboard = () => {
               </Button>
             </Box>
 
-            {/* SCROLLABLE CONTAINER */}
+            {/* SCROLLABLE      <Box sx={{ position: "fixed", bottom: 30, right: 30, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Fab color="primary" onClick={() => setVideoOpen(true)} aria-label="video call">
+          <VideoCallIcon />
+        </Fab>
+
+        <Fab color="secondary" aria-label="chat">
+          <ChatPanel />
+        </Fab>
+      </Box>
+      <VideoCall
+        open={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        displayName="Customer"
+      /> CONTAINER */}
             <Box sx={{
               flex: 1,
               minHeight: 0,
@@ -147,20 +158,11 @@ const Dashboard = () => {
         </Container>
       </Box>
 
-      <Box sx={{ position: "fixed", bottom: 30, right: 30, zIndex: 1000, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <Fab color="primary" onClick={() => setVideoOpen(true)} aria-label="video call">
-          <VideoCallIcon />
-        </Fab>
-
-        <Fab color="secondary" aria-label="chat">
-          <ChatPanel />
-        </Fab>
+      <Box sx={{ position: "fixed", bottom: 30, right: 30 }}>
+        <ChatPanel />
       </Box>
-      <VideoCall
-        open={videoOpen}
-        onClose={() => setVideoOpen(false)}
-        displayName="Customer"
-      />
+
+      <VideoCall displayName="Customer" />
     </Box >
   );
 }
