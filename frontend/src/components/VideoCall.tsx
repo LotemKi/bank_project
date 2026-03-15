@@ -1,13 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    IconButton,
-    Typography,
-    Fab,
-    Box
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Fab, Box } from "@mui/material";
 import { Close } from "@mui/icons-material";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 
@@ -108,7 +100,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                     aria-label="video support"
                     onClick={() => setOpen(true)}
                 >
-                    <VideoCallIcon />
+                    <VideoCallIcon sx={{ fontSize: 18, color: "secondary" }} />
                 </Fab>
             </Box>
 
