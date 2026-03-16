@@ -170,7 +170,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
             </Dialog>
             <video
                 ref={videoRef}
-                src="/agent_greeting.mp4"
+                src="/agent_greeting_videocall.mp4"
                 autoPlay
                 loop
                 muted
