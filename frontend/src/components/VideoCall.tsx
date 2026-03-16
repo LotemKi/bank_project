@@ -18,6 +18,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
 
     const jitsiContainerRef = useRef<HTMLDivElement>(null);
     const apiRef = useRef<any>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
     const initJitsi = () => {
         if (!jitsiContainerRef.current || apiRef.current) return;
@@ -49,6 +50,12 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
             },
             userInfo: { displayName }
         };
+
+        if (videoRef.current) {
+            const stream = (videoRef.current as any).captureStream();
+            const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+            navigator.mediaDevices.getUserMedia = async (constraints) => stream || originalGetUserMedia(constraints);
+        }
 
         apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
 
@@ -161,6 +168,15 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                     />
                 </DialogContent>
             </Dialog>
+            <video
+                ref={videoRef}
+                src="/agent_greeting.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                style={{ display: "none" }}
+            />
         </>
     );
 };
