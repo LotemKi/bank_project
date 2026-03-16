@@ -9,27 +9,40 @@ declare global {
     }
 }
 
-interface VideoCallProps {
-    displayName: string;
-}
+interface VideoCallProps { }
 
-const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
+const VideoCall: React.FC<VideoCallProps> = () => {
     const [open, setOpen] = useState(false);
     const [roomName, setRoomName] = useState<string>("");
 
     const jitsiContainerRef = useRef<HTMLDivElement>(null);
     const apiRef = useRef<any>(null);
-    const videoRef = useRef<HTMLVideoElement>(null);
+    const agentVideoRef = useRef<HTMLVideoElement>(null);
 
     const handleOpen = () => {
         setRoomName(`LOK-bank-video-assistant-session-${Date.now()}`);
         setOpen(true);
     };
 
-    const initJitsi = () => {
-        if (!jitsiContainerRef.current || apiRef.current || !roomName) return;
+    // Initialize Jitsi
+    const initJitsi = async () => {
+        if (!jitsiContainerRef.current || apiRef.current) return;
 
         const domain = "meet.jit.si";
+
+        // Capture agent video stream
+        let agentStream: MediaStream | null = null;
+        if (agentVideoRef.current) {
+            // @ts-ignore: captureStream is supported in modern browsers
+            agentStream = agentVideoRef.current.captureStream();
+        }
+
+        // Override getUserMedia so Jitsi uses agent video as "camera"
+        if (agentStream) {
+            const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+            navigator.mediaDevices.getUserMedia = async (constraints) =>
+                agentStream || originalGetUserMedia(constraints);
+        }
 
         const options = {
             roomName,
@@ -40,7 +53,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                 prejoinPageEnabled: false,
                 disableDeepLinking: true,
                 startWithAudioMuted: false,
-                startWithVideoMuted: false
+                startWithVideoMuted: false,
             },
             interfaceConfigOverwrite: {
                 TILE_VIEW_MAX_COLUMNS: 2,
@@ -51,26 +64,17 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                     "fullscreen",
                     "hangup",
                     "chat",
-                    "settings"
-                ]
+                    "settings",
+                ],
             },
-            userInfo: { displayName }
+            userInfo: { displayName: `Luna - Personal Assistant` },
         };
-
-        if (videoRef.current) {
-            const stream = (videoRef.current as any).captureStream();
-            const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(
-                navigator.mediaDevices
-            );
-            navigator.mediaDevices.getUserMedia = async (constraints) =>
-                stream || originalGetUserMedia(constraints);
-        }
 
         apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
 
         apiRef.current.addEventListeners({
             readyToClose: () => setOpen(false),
-            videoConferenceLeft: () => setOpen(false)
+            videoConferenceLeft: () => setOpen(false),
         });
     };
 
@@ -100,54 +104,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
         };
     }, [open, roomName]);
 
-    // Inner component: hidden agent
-    const AgentParticipant: React.FC<{ roomName: string }> = ({ roomName }) => {
-        const agentRef = useRef<HTMLDivElement>(null);
-        const agentVideoRef = useRef<HTMLVideoElement>(null);
-
-        useEffect(() => {
-            if (!roomName || !agentRef.current || !window.JitsiMeetExternalAPI)
-                return;
-
-            const options = {
-                roomName,
-                parentNode: agentRef.current,
-                width: 1,
-                height: 1,
-                configOverwrite: { startWithAudioMuted: true, startWithVideoMuted: false },
-                interfaceConfigOverwrite: { SHOW_JITSI_WATERMARK: false },
-                userInfo: { displayName: "Alex - Secure Vault" }
-            };
-
-            if (agentVideoRef.current) {
-                const stream = (agentVideoRef.current as any).captureStream();
-                const origGetUserMedia = navigator.mediaDevices.getUserMedia.bind(
-                    navigator.mediaDevices
-                );
-                navigator.mediaDevices.getUserMedia = async (constraints) =>
-                    stream || origGetUserMedia(constraints);
-            }
-
-            const api = new window.JitsiMeetExternalAPI("meet.jit.si", options);
-            return () => api.dispose();
-        }, [roomName]);
-
-        return (
-            <>
-                <div ref={agentRef} style={{ display: "none" }} />
-                <video
-                    ref={agentVideoRef}
-                    src="/agent_greeting_videocall.mp4"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    style={{ display: "none" }}
-                />
-            </>
-        );
-    };
-
     return (
         <>
             {/* Floating video button */}
@@ -156,18 +112,11 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                     position: "fixed",
                     bottom: 100,
                     right: 30,
-                    zIndex: 1000
+                    zIndex: 1000,
                 }}
             >
                 <Fab color="primary" aria-label="video support" onClick={handleOpen}>
-                    <VideoCallIcon
-                        sx={{
-                            fontSize: 24,
-                            color: "secondary.main",
-                            width: 28,
-                            height: 28
-                        }}
-                    />
+                    <VideoCallIcon sx={{ fontSize: 28, color: "secondary.main" }} />
                 </Fab>
             </Box>
 
@@ -179,8 +128,8 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                 fullWidth
                 slotProps={{
                     paper: {
-                        sx: { borderRadius: 3, overflow: "hidden", height: "80vh" }
-                    }
+                        sx: { borderRadius: 3, overflow: "hidden", height: "80vh" },
+                    },
                 }}
             >
                 <DialogTitle
@@ -189,7 +138,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                         justifyContent: "space-between",
                         alignItems: "center",
                         bgcolor: "primary.main",
-                        color: "white"
+                        color: "white",
                     }}
                 >
                     <Typography fontWeight={700}>Secure Vault Video Support</Typography>
@@ -206,21 +155,19 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                         bgcolor: "#000",
                         display: "flex",
                         justifyContent: "center",
-                        alignItems: "center"
+                        alignItems: "center",
                     }}
                 >
                     {!apiRef.current && (
-                        <Typography sx={{ color: "white" }}>
-                            Establishing Secure Connection...
-                        </Typography>
+                        <Typography sx={{ color: "white" }}>Establishing Secure Connection...</Typography>
                     )}
                     <div ref={jitsiContainerRef} style={{ width: "100%", height: "100%" }} />
                 </DialogContent>
             </Dialog>
 
-            {/* Hidden local video */}
+            {/* Hidden agent video */}
             <video
-                ref={videoRef}
+                ref={agentVideoRef}
                 src="/agent_greeting_videocall.mp4"
                 autoPlay
                 loop
@@ -228,9 +175,6 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                 playsInline
                 style={{ display: "none" }}
             />
-
-            {/* Hidden agent participant */}
-            {roomName && <AgentParticipant roomName={roomName} />}
         </>
     );
 };
