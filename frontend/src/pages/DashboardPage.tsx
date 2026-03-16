@@ -162,7 +162,7 @@ const Dashboard = () => {
         <ChatPanel />
       </Box>
 
-      <VideoCall />
+      <VideoCall displayName={displayName} />
     </Box >
   );
 }

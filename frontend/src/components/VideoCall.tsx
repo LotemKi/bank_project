@@ -9,9 +9,11 @@ declare global {
     }
 }
 
-interface VideoCallProps { }
+interface VideoCallProps {
+    displayName: string; // customer name
+}
 
-const VideoCall: React.FC<VideoCallProps> = () => {
+const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
     const [open, setOpen] = useState(false);
     const [roomName, setRoomName] = useState<string>("");
 
@@ -24,25 +26,10 @@ const VideoCall: React.FC<VideoCallProps> = () => {
         setOpen(true);
     };
 
-    // Initialize Jitsi
-    const initJitsi = async () => {
+    // Initialize Jitsi with only audio for the user
+    const initJitsi = () => {
         if (!jitsiContainerRef.current || apiRef.current) return;
-
         const domain = "meet.jit.si";
-
-        // Capture agent video stream
-        let agentStream: MediaStream | null = null;
-        if (agentVideoRef.current) {
-            // @ts-ignore: captureStream is supported in modern browsers
-            agentStream = agentVideoRef.current.captureStream();
-        }
-
-        // Override getUserMedia so Jitsi uses agent video as "camera"
-        if (agentStream) {
-            const originalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-            navigator.mediaDevices.getUserMedia = async (constraints) =>
-                agentStream || originalGetUserMedia(constraints);
-        }
 
         const options = {
             roomName,
@@ -53,21 +40,18 @@ const VideoCall: React.FC<VideoCallProps> = () => {
                 prejoinPageEnabled: false,
                 disableDeepLinking: true,
                 startWithAudioMuted: false,
-                startWithVideoMuted: false,
+                startWithVideoMuted: true, // hide user video
             },
             interfaceConfigOverwrite: {
                 TILE_VIEW_MAX_COLUMNS: 2,
                 TOOLBAR_BUTTONS: [
                     "microphone",
-                    "camera",
-                    "desktop",
-                    "fullscreen",
                     "hangup",
                     "chat",
-                    "settings",
+                    "settings"
                 ],
             },
-            userInfo: { displayName: `Luna - Personal Assistant` },
+            userInfo: { displayName },
         };
 
         apiRef.current = new window.JitsiMeetExternalAPI(domain, options);
@@ -82,7 +66,6 @@ const VideoCall: React.FC<VideoCallProps> = () => {
         if (!open) return;
 
         const existingScript = document.getElementById("jitsi-script");
-
         if (!window.JitsiMeetExternalAPI) {
             if (!existingScript) {
                 const script = document.createElement("script");
@@ -127,9 +110,7 @@ const VideoCall: React.FC<VideoCallProps> = () => {
                 maxWidth="lg"
                 fullWidth
                 slotProps={{
-                    paper: {
-                        sx: { borderRadius: 3, overflow: "hidden", height: "80vh" },
-                    },
+                    paper: { sx: { borderRadius: 3, overflow: "hidden", height: "80vh" } },
                 }}
             >
                 <DialogTitle
@@ -152,29 +133,33 @@ const VideoCall: React.FC<VideoCallProps> = () => {
                     sx={{
                         p: 0,
                         height: "100%",
-                        bgcolor: "#000",
                         display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        flexDirection: "row",
+                        bgcolor: "#000",
                     }}
                 >
-                    {!apiRef.current && (
-                        <Typography sx={{ color: "white" }}>Establishing Secure Connection...</Typography>
-                    )}
-                    <div ref={jitsiContainerRef} style={{ width: "100%", height: "100%" }} />
+                    {/* Left: Agent video */}
+                    <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <video
+                            ref={agentVideoRef}
+                            src="/agent_greeting_videocall.mp4"
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                    </Box>
+
+                    {/* Right: Jitsi container for user audio/chat */}
+                    <Box sx={{ width: "350px", bgcolor: "#111" }}>
+                        {!apiRef.current && (
+                            <Typography sx={{ color: "white", p: 2 }}>Connecting...</Typography>
+                        )}
+                        <div ref={jitsiContainerRef} style={{ width: "100%", height: "100%" }} />
+                    </Box>
                 </DialogContent>
             </Dialog>
-
-            {/* Hidden agent video */}
-            <video
-                ref={agentVideoRef}
-                src="/agent_greeting_videocall.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                style={{ display: "none" }}
-            />
         </>
     );
 };
