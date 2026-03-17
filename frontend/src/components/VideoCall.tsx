@@ -10,7 +10,7 @@ declare global {
 }
 
 interface VideoCallProps {
-    displayName: string; // customer name
+    displayName: string;
 }
 
 const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
@@ -40,7 +40,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                 prejoinPageEnabled: false,
                 disableDeepLinking: true,
                 startWithAudioMuted: false,
-                startWithVideoMuted: true, // hide user video
+                startWithVideoMuted: false,
             },
             interfaceConfigOverwrite: {
                 TILE_VIEW_MAX_COLUMNS: 2,
@@ -122,8 +122,8 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                         color: "white",
                     }}
                 >
-                    <Typography fontWeight={700}>Secure Vault Video Support</Typography>
-                    <IconButton onClick={() => setOpen(false)} sx={{ color: "white" }}>
+                    <Typography fontWeight={800}>LOK Bank Video Support</Typography>
+                    <IconButton onClick={() => setOpen(false)} sx={{ color: "text.primary" }}>
                         <Close />
                     </IconButton>
                 </DialogTitle>
@@ -135,7 +135,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                         height: "100%",
                         display: "flex",
                         flexDirection: "row",
-                        bgcolor: "#000",
+                        bgcolor: "primary.dark",
                     }}
                 >
                     {/* Left: Agent video */}
@@ -152,7 +152,7 @@ const VideoCall: React.FC<VideoCallProps> = ({ displayName }) => {
                     </Box>
 
                     {/* Right: Jitsi container for user audio/chat */}
-                    <Box sx={{ width: "350px", bgcolor: "#111" }}>
+                    <Box sx={{ width: "450px", bgcolor: "#111" }}>
                         {!apiRef.current && (
                             <Typography sx={{ color: "white", p: 2 }}>Connecting...</Typography>
                         )}
